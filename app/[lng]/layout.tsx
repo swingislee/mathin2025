@@ -3,37 +3,36 @@ import './globals.css'
 import { dir } from 'i18next'
 import { languages, fallbackLng } from '@/lib/i18n/settings'
 import { Translate } from '@/lib/i18n'
+import { use } from 'react'
 
+type Params = Promise<{ lng: string }>
 
 export async function generateStaticParams() {
   return languages.map((lng) => ({ lng }))
 }
 
-export async function generateMetadata({ params: { lng } }: {
-  params: {
-    lng: string;
-  };
+export async function generateMetadata(props: {
+  params: Params
 }) {
+  let { lng } = await props.params;
   if (languages.indexOf(lng) < 0) lng = fallbackLng
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = await Translate(lng)
+
   return {
     title: t('title'),
     content: 'test website.'
   }
 }
 
-export default function RootLayout({
-  children,
-  params: {
-    lng
+export default async function RootLayout(
+  props: {
+    children: React.ReactNode;
+    params: Params;
   }
-}: {
-  children: React.ReactNode;
-  params: {
-    lng: string;
-  };
-}) {
+) {
+  const { lng } = await props.params;
+  const { children } = props;
+
   return (
     <html lang={lng} dir={dir(lng)}>
       <head />

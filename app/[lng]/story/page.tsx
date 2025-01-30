@@ -1,12 +1,14 @@
 import { Translate } from "@/lib/i18n";
 import Link from "next/link";
 
-export default async function storyPage ({ params: { lng } }: {
-  params: {
-    lng: string;
-  };
-  }){
-    const { t } = await Translate(lng)
+type Params = Promise<{ lng: string }>
+
+export default async function storyPage (props: {
+  params: Params
+}){
+  const params = await props.params
+  const lng = params.lng;
+  const { t } = await Translate(lng)
 
     return (
     <>
