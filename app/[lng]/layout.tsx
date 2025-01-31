@@ -35,7 +35,7 @@ export default async function RootLayout(
   const { children } = props;
 
   return (
-    <html lang={lng} dir={dir(lng)}>
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
       <head />
       <body>
       <ThemeProvider
@@ -44,7 +44,9 @@ export default async function RootLayout(
             enableSystem
             disableTransitionOnChange
           >
-        {children}
+          <div className='h-full'>
+            {children}
+          </div>
         <Footer />    
         </ThemeProvider>  
       </body>
