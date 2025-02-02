@@ -34,6 +34,28 @@ export type Database = {
   }
   next_auth: {
     Tables: {
+      "2fa_confirmation": {
+        Row: {
+          id: string
+          userId: string
+        }
+        Insert: {
+          id?: string
+          userId: string
+        }
+        Update: {
+          id?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "2fa_confirmation_userId_fkey"
+            columns: ["userId"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       accounts: {
         Row: {
           access_token: string | null
@@ -92,6 +114,27 @@ export type Database = {
           },
         ]
       }
+      password_reset_token: {
+        Row: {
+          email: string
+          expires: string
+          id: string
+          token: string
+        }
+        Insert: {
+          email: string
+          expires: string
+          id?: string
+          token: string
+        }
+        Update: {
+          email?: string
+          expires?: string
+          id?: string
+          token?: string
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           expires: string
@@ -120,47 +163,93 @@ export type Database = {
           },
         ]
       }
+      two_factor_token: {
+        Row: {
+          email: string
+          expires: string
+          id: string
+          token: string
+        }
+        Insert: {
+          email: string
+          expires: string
+          id?: string
+          token: string
+        }
+        Update: {
+          email?: string
+          expires?: string
+          id?: string
+          token?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           email: string | null
           emailVerified: string | null
           id: string
           image: string | null
+          is2FAEnabled: boolean
           name: string | null
+          password: string | null
+          role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
           email?: string | null
           emailVerified?: string | null
           id?: string
           image?: string | null
+          is2FAEnabled?: boolean
           name?: string | null
+          password?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
           email?: string | null
           emailVerified?: string | null
           id?: string
           image?: string | null
+          is2FAEnabled?: boolean
           name?: string | null
+          password?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
       }
       verification_tokens: {
         Row: {
+          email: string | null
           expires: string
+          id: string
           identifier: string | null
-          token: string
+          token: string | null
+          userId: string | null
         }
         Insert: {
+          email?: string | null
           expires: string
+          id?: string
           identifier?: string | null
-          token: string
+          token?: string | null
+          userId?: string | null
         }
         Update: {
+          email?: string | null
           expires?: string
+          id?: string
           identifier?: string | null
-          token?: string
+          token?: string | null
+          userId?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "verification_tokens_userId_fkey"
+            columns: ["userId"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -206,214 +295,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      auth_2fa_confirmation: {
-        Row: {
-          id: string
-          userId: string
-        }
-        Insert: {
-          id?: string
-          userId: string
-        }
-        Update: {
-          id?: string
-          userId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "auth_2fa_confirmation_userId_fkey"
-            columns: ["userId"]
-            referencedRelation: "auth_user"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      auth_account: {
-        Row: {
-          access_token: string | null
-          expires_at: number | null
-          id: string
-          id_token: string | null
-          provider: string
-          providerAccountId: string
-          refresh_token: string | null
-          scope: string | null
-          session_state: string | null
-          token_type: string | null
-          type: string
-          userId: string
-        }
-        Insert: {
-          access_token?: string | null
-          expires_at?: number | null
-          id?: string
-          id_token?: string | null
-          provider: string
-          providerAccountId: string
-          refresh_token?: string | null
-          scope?: string | null
-          session_state?: string | null
-          token_type?: string | null
-          type: string
-          userId: string
-        }
-        Update: {
-          access_token?: string | null
-          expires_at?: number | null
-          id?: string
-          id_token?: string | null
-          provider?: string
-          providerAccountId?: string
-          refresh_token?: string | null
-          scope?: string | null
-          session_state?: string | null
-          token_type?: string | null
-          type?: string
-          userId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "auth_account_userId_fkey"
-            columns: ["userId"]
-            referencedRelation: "auth_user"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      auth_password_reset_token: {
-        Row: {
-          email: string
-          expires: string
-          id: string
-          token: string
-        }
-        Insert: {
-          email: string
-          expires: string
-          id?: string
-          token: string
-        }
-        Update: {
-          email?: string
-          expires?: string
-          id?: string
-          token?: string
-        }
-        Relationships: []
-      }
-      auth_session: {
-        Row: {
-          expires: string
-          id: string
-          sessionToken: string
-          userId: string | null
-        }
-        Insert: {
-          expires: string
-          id?: string
-          sessionToken: string
-          userId?: string | null
-        }
-        Update: {
-          expires?: string
-          id?: string
-          sessionToken?: string
-          userId?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "auth_session_userId_fkey"
-            columns: ["userId"]
-            referencedRelation: "auth_user"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      auth_two_factor_token: {
-        Row: {
-          email: string
-          expires: string
-          id: string
-          token: string
-        }
-        Insert: {
-          email: string
-          expires: string
-          id?: string
-          token: string
-        }
-        Update: {
-          email?: string
-          expires?: string
-          id?: string
-          token?: string
-        }
-        Relationships: []
-      }
-      auth_user: {
-        Row: {
-          email: string | null
-          emailVerified: string | null
-          id: string
-          image: string | null
-          is2FAEnabled: boolean
-          name: string | null
-          password: string | null
-          role: Database["public"]["Enums"]["user_role"]
-        }
-        Insert: {
-          email?: string | null
-          emailVerified?: string | null
-          id?: string
-          image?: string | null
-          is2FAEnabled?: boolean
-          name?: string | null
-          password?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-        }
-        Update: {
-          email?: string | null
-          emailVerified?: string | null
-          id?: string
-          image?: string | null
-          is2FAEnabled?: boolean
-          name?: string | null
-          password?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-        }
-        Relationships: []
-      }
-      auth_verification_token: {
-        Row: {
-          email: string | null
-          expires: string
-          id: string
-          token: string
-          userId: string | null
-        }
-        Insert: {
-          email?: string | null
-          expires: string
-          id?: string
-          token: string
-          userId?: string | null
-        }
-        Update: {
-          email?: string | null
-          expires?: string
-          id?: string
-          token?: string
-          userId?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "auth_verification_token_userId_fkey"
-            columns: ["userId"]
-            referencedRelation: "auth_user"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       game_nonogram_q: {
         Row: {
           created_at: string | null
@@ -489,9 +370,9 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "note_user_id_fkey"
+            foreignKeyName: "note_user_id_fkey1"
             columns: ["user_id"]
-            referencedRelation: "auth_user"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

@@ -1,5 +1,7 @@
 import { Translate } from "@/lib/i18n";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 type Params = Promise<{ lng: string }>
 
@@ -9,11 +11,14 @@ export default async function storyPage (props: {
   const params = await props.params
   const lng = params.lng;
   const { t } = await Translate(lng)
+  const session = await auth()
+  const user = session?.user;
 
     return (
     <>
-    <h1>{JSON.stringify(lng)}</h1>
+    <h1>{JSON.stringify(user)}</h1>
     <Link href={`/${lng}`}> {t("title")} </Link>
+    <LogoutButton>logout</ LogoutButton>
     </>
     );
   }

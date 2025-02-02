@@ -6,10 +6,10 @@ import { Translate } from "@/lib/i18n/client";
 import { FaWeixin } from "react-icons/fa";
 import { BsTencentQq } from "react-icons/bs";
 import { FaGithub } from "react-icons/fa";
-// import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
-// import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 
 
@@ -20,9 +20,9 @@ export const Social = () => {
     const callbackUrl = searchParams.get("callbackUrl");
     
     const onClick = (provider: "wechat" | "qq" | "github") => {
-        // signIn(provider,{
-        //     callbackUrl: callbackUrl || `/${params.lng}${DEFAULT_LOGIN_REDIRECT}`
-        // })
+        signIn(provider,{
+            callbackUrl: callbackUrl || `/${params.lng}${DEFAULT_LOGIN_REDIRECT}`
+        })
     }
     return(
         <div className="flex w-full items-center justify-center gap-x-2">

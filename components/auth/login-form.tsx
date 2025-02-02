@@ -27,8 +27,8 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import { CardWrapper } from "./card-wrapper"
-import { FormError } from "../form-error"
-import { FormSuccess } from "../form-success"
+import { FormError } from "./form-error"
+import { FormSuccess } from "./form-success"
 import { login } from "@/action/auth/login"
 
 
@@ -66,6 +66,7 @@ export const LoginForm = () => {
 	})
 
 	const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+
 		setError("")
 		setSuccess("")
 
@@ -76,20 +77,20 @@ export const LoginForm = () => {
 
 		startTransition(() => {
 			login(values,params.lng,callbackUrl)
-				// .then((data) =>{
-				// 	if (data?.error) {
-				// 		//form.reset();    <== DELETE THIS ROW
-				// 		setError(data.error);
-				// 	}
-				// 	if (data?.success) {
-				// 		form.reset();
-				// 		setSuccess(data.success);
-				// 	}
-				// 	if (data?.twoFactor) {
-				// 		setShowTwoFactor(true);
-				// 	}
-				// }
-				// )
+				.then((data) =>{
+					if (data?.error) {
+						//form.reset();    <== DELETE THIS ROW
+						setError(data.error);
+					}
+					if (data?.success) {
+						form.reset();
+						setSuccess(data.success);
+					}
+					if (data?.twoFactor) {
+						setShowTwoFactor(true);
+					}
+				}
+				)
 	
 				.catch(() => setError("something went wrong"))
 			});
@@ -118,7 +119,8 @@ export const LoginForm = () => {
 									<FormItem>
 										<FormLabel>{t('Two Factor code')}</FormLabel>
 										<FormControl>
-											<div																		className="w-full flex items-center justify-center"
+											<div																		
+												className="w-full flex items-center justify-center"
 												>
 												<InputOTP 
 													{...field}
