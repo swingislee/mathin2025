@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useState, useTransition } from "react"
-import { useParams } from "next/navigation"
 
 import { Translate } from "@/lib/i18n/client"
 import { ResetSchema } from "@/schemas/auth"
@@ -23,12 +22,14 @@ import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error"
 import { FormSuccess } from "./form-success"
 import { reset } from "@/action/auth/reset"
-import Link from "next/link"
 
+interface ParamsProps {
+  lng: string;
+}
 
-export const ResetForm = () => {
-	const params = useParams<{ lng: string; }>()
-	const { t } = Translate(params.lng)
+export const ResetForm =({ lng }: ParamsProps) => {
+
+	const { t } = Translate(lng)
 
 	const [error,setError] = useState<string | undefined>("");
 	const [success,setSuccess] = useState<string | undefined>("");
@@ -46,7 +47,7 @@ const onSubmit = (values: z.infer<typeof ResetSchema>) => {
 	setSuccess("")
 
 	startTransition(() => {
-		reset(values,params.lng)
+		reset(values,lng)
 			.then((data) =>{
 				setError(data?.error)
 				setSuccess(data?.success)
@@ -59,7 +60,7 @@ const onSubmit = (values: z.infer<typeof ResetSchema>) => {
 			titleLabel={t('authreset')}
 			headerLabel={t("Forgotpassword")}
 			backButtonLabel={t('backtologin')}
-			backButtonHref={`/${params.lng}/register`}
+			backButtonHref={`/${lng}/register`}
 		>
 			<Form {...form}>
 				<form

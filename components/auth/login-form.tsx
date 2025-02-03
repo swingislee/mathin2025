@@ -31,7 +31,6 @@ import { FormError } from "./form-error"
 import { FormSuccess } from "./form-success"
 import { login } from "@/action/auth/login"
 
-
 export const LoginForm = () => {
 	const params = useParams<{ lng: string; }>()
 	const { t } = Translate(params.lng)
@@ -55,7 +54,7 @@ export const LoginForm = () => {
 	
 		searchparams.delete("error");
 		return searchparams.toString();
-	}, []);
+	}, [searchParams]);
 
 	const form = useForm<z.infer<typeof LoginSchema>>({
 		resolver: zodResolver(LoginSchema),
@@ -205,7 +204,6 @@ export const LoginForm = () => {
 				</form>
 			</Form>
 		</CardWrapper>   
-
   );
 };
 

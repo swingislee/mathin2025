@@ -7,16 +7,14 @@ import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 
-import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect,useRef,useState } from "react";
-import { Translate } from "@/lib/i18n/client";
 
-export const NewVerificationForm  = () => {
-	const params = useParams<{ lng: string; }>()
-	const { t } = Translate(params.lng)
+interface ParamsProps {
+  lng: string;
+  token: string;
+}
 
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+export const NewVerificationForm  = ({ lng, token }: ParamsProps) => {
 
   const [error , setError] = useState<string | undefined>();
   const [success , setSuccess] = useState<string | undefined>();
@@ -27,8 +25,6 @@ export const NewVerificationForm  = () => {
     if(!token || token === lastAttemptedToken.current) return;
 
     lastAttemptedToken.current = token;
-
-    console.timeLog
 
     newVerification(token)
       .then((data) => {
@@ -49,7 +45,7 @@ export const NewVerificationForm  = () => {
         <CardWrapper
             headerLabel="Confirming your verification"
             titleLabel="Auth"
-            backButtonHref={`/${params.lng}/login`}
+            backButtonHref={`/${lng}/login`}
             backButtonLabel="Back to login"            
         > 
             <div className="flex items-center w-full justify-center">              

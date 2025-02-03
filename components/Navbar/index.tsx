@@ -5,7 +5,7 @@ export default async function Navbar({lng,page}
     :{lng:string,page:string}) {
   const { t } = await Translate(lng,"translation")
     
-    let conbase: any, fontbase: any, linkbase: any;
+    let conbase: string, fontbase: string, linkbase: string;
     if (page === 'home') {
       linkbase = ' rounded-md hover:bg-amber-200 dark:hover:bg-slate-600';
       conbase = "fixed dl:w-auto dl:bottom-auto dl:right-8 dl:top-[5.5rem] dl:gap-4 dl:bg-transparent text-x"           

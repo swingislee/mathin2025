@@ -27,7 +27,7 @@ export const sendEmail = async ({ to, subject, text, html }: IEmailOptions) => {
       html, // html body
     })
     return info
-  } catch (error) {
+  } catch {
     // 失败时候的处理
     throw new Error('BAD_REQUEST')
   }

@@ -9,7 +9,6 @@ import {
 import { Header } from "./header";
 import { Social } from "./social";
 import { BackButton } from "./back-button";
-import { title } from "process";
 
 interface CardWrapperProps {
   children: React.ReactNode;  

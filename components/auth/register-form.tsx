@@ -3,9 +3,7 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState, useTransition } from "react"
-
-import { Translate } from "@/lib/i18n/client"
+import { Suspense, useState, useTransition } from "react"
 import { useParams } from "next/navigation"
 
 import { RegisterSchema } from "@/schemas/auth"
@@ -23,11 +21,18 @@ import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error"
 import { FormSuccess } from "./form-success"
 import { register } from "@/action/auth/register"
+import { BeatLoader } from "react-spinners"
 
+function RegisterFormFallback() {
+	return (
+			<div className="flex w-full items-center justify-center gap-x-2">
+					<BeatLoader className="h-8 w-8"/>
+			</div>
+	)
+}
 
 export const RegisterForm = () => {
 	const params = useParams<{ lng: string; }>();
-	const { t } = Translate(params.lng);
 
 	const [error,setError] = useState<string | undefined>("");
 	const [success,setSuccess] = useState<string | undefined>("");
@@ -55,7 +60,8 @@ const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
 	  });
 }
 
-  return (    
+  return (
+		<Suspense fallback={<RegisterFormFallback />}>    
 		<CardWrapper
 			titleLabel="Auth"
 			headerLabel="create an account"
@@ -138,6 +144,8 @@ const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
 				</form>
 			</Form>
 		</CardWrapper>
+
+		</Suspense>
   );
 };
 

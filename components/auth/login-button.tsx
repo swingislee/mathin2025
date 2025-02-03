@@ -1,6 +1,6 @@
 "use client"
+
 import { useRouter } from 'next/navigation'
-import { Translate } from "@/lib/i18n/client"
 import { useParams } from "next/navigation"
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { DialogContent } from '@radix-ui/react-dialog';
@@ -18,7 +18,6 @@ export const LoginButton = ({
     asChild
 }:LoginButtonProps) =>{
     const params = useParams<{ lng: string; }>()
-	  const { t } = Translate(params.lng)
     const router = useRouter()
 
     if (mode === "modal"){
