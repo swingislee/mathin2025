@@ -1,6 +1,5 @@
 import { Translate } from "@/lib/i18n";
 import Image from 'next/image'
-import { createClient } from "@/utils/supabase/server";
 import Navbar from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -12,19 +11,7 @@ export default async function Page(props: {
   const params = await props.params
   const lng = params.lng;
   const { t } = await Translate(lng)
-
-  const supabase = await createClient();
-
-  const { data, error: childrenError } = await supabase
-    .schema('next_auth')
-    .from('users')
-    .select('*');
-
-
-  if (childrenError) {
-    console.error(childrenError);
-    return; // Handle error appropriately
-  }
+  
 
   return (
     <div>
@@ -46,7 +33,6 @@ export default async function Page(props: {
 
       <div className="absolute w-full h-full z-20 overflow-hidden pointer-events-none">
         <Sidebar lng={lng}/>
-        <>{JSON.stringify(data, null, 2)}</>
       </div>
       
     </div>

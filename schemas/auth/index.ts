@@ -1,5 +1,4 @@
 import * as z from "zod"
-import { userRole } from "@/utils/types/customEnums";
 
 export const SettingsSchema = z.object({
   name: z.optional(z.string()),

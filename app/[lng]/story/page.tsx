@@ -16,7 +16,8 @@ export default async function storyPage (props: {
 
     return (
     <>
-    <h1>{JSON.stringify(user)}</h1>
+    <pre>{JSON.stringify(user)}</pre>
+    <pre>{JSON.stringify(session)}</pre>
     <Link href={`/${lng}`}> {t("title")} </Link>
     <LogoutButton>logout</ LogoutButton>
     </>

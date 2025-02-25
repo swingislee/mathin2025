@@ -54,6 +54,9 @@ export const Sidebar = ({ lng }: { lng: string }) => {
             className="absolute top-0 right-0 flex flex-col h-full space-y-2  bg-white dark:bg-slate-600 shadow-lg p-4 pointer-events-auto"
           >
             <div className='h-20'>  </div>
+              <Button variant='ghost'  size="lg" asChild>
+                <Link href={`/${lng}/dashboard`} > {t("dashboard")} </Link>
+              </Button>
               <Button variant="default"  size="lg" asChild>
                 <Link href={`/${lng}/login`} > {t("signin")} </Link>
               </Button>

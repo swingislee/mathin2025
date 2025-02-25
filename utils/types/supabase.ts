@@ -464,6 +464,355 @@ export type Database = {
           },
         ]
       }
+      出勤: {
+        Row: {
+          出勤id: string
+          出勤状态: string | null
+          成绩: number | null
+          报名id: string | null
+          课上学习情况: string | null
+          课后作业完成情况: string | null
+          课次编号: string | null
+          进门考成绩: number | null
+        }
+        Insert: {
+          出勤id?: string
+          出勤状态?: string | null
+          成绩?: number | null
+          报名id?: string | null
+          课上学习情况?: string | null
+          课后作业完成情况?: string | null
+          课次编号?: string | null
+          进门考成绩?: number | null
+        }
+        Update: {
+          出勤id?: string
+          出勤状态?: string | null
+          成绩?: number | null
+          报名id?: string | null
+          课上学习情况?: string | null
+          课后作业完成情况?: string | null
+          课次编号?: string | null
+          进门考成绩?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "出勤_报名id_fkey"
+            columns: ["报名id"]
+            referencedRelation: "报名"
+            referencedColumns: ["报名id"]
+          },
+        ]
+      }
+      学生档案: {
+        Row: {
+          其他信息: Json | null
+          学生id: string
+          学生姓名: string
+          学生状态: string | null
+          微信: string | null
+          注册时间: string | null
+          联系方式: string | null
+        }
+        Insert: {
+          其他信息?: Json | null
+          学生id?: string
+          学生姓名: string
+          学生状态?: string | null
+          微信?: string | null
+          注册时间?: string | null
+          联系方式?: string | null
+        }
+        Update: {
+          其他信息?: Json | null
+          学生id?: string
+          学生姓名?: string
+          学生状态?: string | null
+          微信?: string | null
+          注册时间?: string | null
+          联系方式?: string | null
+        }
+        Relationships: []
+      }
+      家长沟通: {
+        Row: {
+          家长反馈: string | null
+          报名id: string | null
+          沟通id: string
+          沟通内容: string | null
+          沟通方式: string | null
+          沟通时间: string | null
+        }
+        Insert: {
+          家长反馈?: string | null
+          报名id?: string | null
+          沟通id?: string
+          沟通内容?: string | null
+          沟通方式?: string | null
+          沟通时间?: string | null
+        }
+        Update: {
+          家长反馈?: string | null
+          报名id?: string | null
+          沟通id?: string
+          沟通内容?: string | null
+          沟通方式?: string | null
+          沟通时间?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "家长沟通_报名id_fkey"
+            columns: ["报名id"]
+            referencedRelation: "报名"
+            referencedColumns: ["报名id"]
+          },
+        ]
+      }
+      报名: {
+        Row: {
+          报名id: string
+          报名时间: string | null
+          是否支付: boolean | null
+          用户id: string | null
+          课程id: string | null
+          退课状态: string | null
+        }
+        Insert: {
+          报名id?: string
+          报名时间?: string | null
+          是否支付?: boolean | null
+          用户id?: string | null
+          课程id?: string | null
+          退课状态?: string | null
+        }
+        Update: {
+          报名id?: string
+          报名时间?: string | null
+          是否支付?: boolean | null
+          用户id?: string | null
+          课程id?: string | null
+          退课状态?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "报名_用户id_fkey"
+            columns: ["用户id"]
+            referencedRelation: "学生档案"
+            referencedColumns: ["学生id"]
+          },
+          {
+            foreignKeyName: "报名_课程id_fkey"
+            columns: ["课程id"]
+            referencedRelation: "课程"
+            referencedColumns: ["课程id"]
+          },
+        ]
+      }
+      直播课程: {
+        Row: {
+          参与人数: number | null
+          新增关注: number | null
+          直播id: string
+          直播主题: string | null
+          直播内容: string | null
+          直播时间: string | null
+        }
+        Insert: {
+          参与人数?: number | null
+          新增关注?: number | null
+          直播id?: string
+          直播主题?: string | null
+          直播内容?: string | null
+          直播时间?: string | null
+        }
+        Update: {
+          参与人数?: number | null
+          新增关注?: number | null
+          直播id?: string
+          直播主题?: string | null
+          直播内容?: string | null
+          直播时间?: string | null
+        }
+        Relationships: []
+      }
+      练习打卡: {
+        Row: {
+          完成状态: string | null
+          打卡id: string
+          打卡日期: string | null
+          报名id: string | null
+          练习内容: string | null
+        }
+        Insert: {
+          完成状态?: string | null
+          打卡id?: string
+          打卡日期?: string | null
+          报名id?: string | null
+          练习内容?: string | null
+        }
+        Update: {
+          完成状态?: string | null
+          打卡id?: string
+          打卡日期?: string | null
+          报名id?: string | null
+          练习内容?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "练习打卡_报名id_fkey"
+            columns: ["报名id"]
+            referencedRelation: "报名"
+            referencedColumns: ["报名id"]
+          },
+        ]
+      }
+      老师备课: {
+        Row: {
+          备课id: string
+          备课内容: string | null
+          备课日期: string | null
+          老师名称: string | null
+        }
+        Insert: {
+          备课id?: string
+          备课内容?: string | null
+          备课日期?: string | null
+          老师名称?: string | null
+        }
+        Update: {
+          备课id?: string
+          备课内容?: string | null
+          备课日期?: string | null
+          老师名称?: string | null
+        }
+        Relationships: []
+      }
+      考试成绩: {
+        Row: {
+          成绩: number | null
+          报名id: string | null
+          考试id: string
+          考试时间: string | null
+          考试类型: string | null
+        }
+        Insert: {
+          成绩?: number | null
+          报名id?: string | null
+          考试id?: string
+          考试时间?: string | null
+          考试类型?: string | null
+        }
+        Update: {
+          成绩?: number | null
+          报名id?: string | null
+          考试id?: string
+          考试时间?: string | null
+          考试类型?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "考试成绩_报名id_fkey"
+            columns: ["报名id"]
+            referencedRelation: "报名"
+            referencedColumns: ["报名id"]
+          },
+        ]
+      }
+      获客信息: {
+        Row: {
+          沟通时间: string | null
+          沟通结果: string | null
+          用户id: string | null
+          获客id: string
+          获客渠道: string | null
+        }
+        Insert: {
+          沟通时间?: string | null
+          沟通结果?: string | null
+          用户id?: string | null
+          获客id?: string
+          获客渠道?: string | null
+        }
+        Update: {
+          沟通时间?: string | null
+          沟通结果?: string | null
+          用户id?: string | null
+          获客id?: string
+          获客渠道?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "获客信息_用户id_fkey"
+            columns: ["用户id"]
+            referencedRelation: "学生档案"
+            referencedColumns: ["学生id"]
+          },
+        ]
+      }
+      课程: {
+        Row: {
+          开始时间: string | null
+          授课老师: string | null
+          结束时间: string | null
+          课程id: string
+          课程内容: string | null
+          课程名称: string
+          课程类型: string | null
+        }
+        Insert: {
+          开始时间?: string | null
+          授课老师?: string | null
+          结束时间?: string | null
+          课程id?: string
+          课程内容?: string | null
+          课程名称: string
+          课程类型?: string | null
+        }
+        Update: {
+          开始时间?: string | null
+          授课老师?: string | null
+          结束时间?: string | null
+          课程id?: string
+          课程内容?: string | null
+          课程名称?: string
+          课程类型?: string | null
+        }
+        Relationships: []
+      }
+      选拔活动参与: {
+        Row: {
+          参与id: string
+          参与时间: string | null
+          家长反馈: string | null
+          活动名称: string | null
+          活动成绩: number | null
+          用户id: string | null
+        }
+        Insert: {
+          参与id?: string
+          参与时间?: string | null
+          家长反馈?: string | null
+          活动名称?: string | null
+          活动成绩?: number | null
+          用户id?: string | null
+        }
+        Update: {
+          参与id?: string
+          参与时间?: string | null
+          家长反馈?: string | null
+          活动名称?: string | null
+          活动成绩?: number | null
+          用户id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "选拔活动参与_用户id_fkey"
+            columns: ["用户id"]
+            referencedRelation: "学生档案"
+            referencedColumns: ["学生id"]
+          },
+        ]
+      }
     }
     Views: {
       note_aggregated_diffs: {
