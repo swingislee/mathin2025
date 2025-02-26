@@ -1,7 +1,7 @@
 import Navbar from '@/components/block/navbar';
 import { AppSidebar } from '@/components/block/sidebar';
 import { languages, fallbackLng } from '@/lib/i18n/settings'
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider} from "@/components/ui/sidebar"
 import { cookies } from 'next/headers';
 
 type Params = Promise<{ lng: string }>

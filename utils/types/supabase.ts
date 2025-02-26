@@ -504,9 +504,59 @@ export type Database = {
           },
         ]
       }
+      学情统计: {
+        Row: {
+          created_at: string
+          id: number
+          学情记录: string | null
+          学生id: string
+          星: number | null
+          讲次: number | null
+          课程id: string | null
+          课程环节: string | null
+          雷: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          学情记录?: string | null
+          学生id?: string
+          星?: number | null
+          讲次?: number | null
+          课程id?: string | null
+          课程环节?: string | null
+          雷?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          学情记录?: string | null
+          学生id?: string
+          星?: number | null
+          讲次?: number | null
+          课程id?: string | null
+          课程环节?: string | null
+          雷?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "学情统计_学生id_fkey"
+            columns: ["学生id"]
+            referencedRelation: "学生档案"
+            referencedColumns: ["学生id"]
+          },
+          {
+            foreignKeyName: "学情统计_课程id_fkey"
+            columns: ["课程id"]
+            referencedRelation: "课程"
+            referencedColumns: ["课程id"]
+          },
+        ]
+      }
       学生档案: {
         Row: {
           其他信息: Json | null
+          学币: number | null
           学生id: string
           学生姓名: string
           学生状态: string | null
@@ -516,6 +566,7 @@ export type Database = {
         }
         Insert: {
           其他信息?: Json | null
+          学币?: number | null
           学生id?: string
           学生姓名: string
           学生状态?: string | null
@@ -525,6 +576,7 @@ export type Database = {
         }
         Update: {
           其他信息?: Json | null
+          学币?: number | null
           学生id?: string
           学生姓名?: string
           学生状态?: string | null
