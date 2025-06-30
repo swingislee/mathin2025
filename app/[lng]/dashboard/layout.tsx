@@ -1,5 +1,5 @@
-import Navbar from '@/components/block/navbar';
-import { AppSidebar } from '@/components/block/sidebar';
+import Navbar from '@/app/[lng]/dashboard/_components/navbar';
+import { AppSidebar } from '@/app/[lng]/dashboard/_components/sidebar';
 import { languages, fallbackLng } from '@/lib/i18n/settings'
 import { SidebarProvider} from "@/components/ui/sidebar"
 import { cookies } from 'next/headers';

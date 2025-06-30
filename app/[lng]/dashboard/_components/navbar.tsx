@@ -1,5 +1,5 @@
-import { AvatarButton } from "../auth/avatar-button";
-import { SidebarTrigger } from "../ui/sidebar";
+import { AvatarButton } from "@/components/auth/avatar-button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar = () => {
   return (

@@ -24,11 +24,8 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   const existingUser = await getUserByEmail(email);
   if  (existingUser) {
-    // console.log("send error message")
     return { error: "Email already in use!" }
   }
-
-  console.log(validatedFields)
 
   const { error } = await supabase
   .schema("next_auth")
