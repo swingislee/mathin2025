@@ -1,14 +1,32 @@
 import { cn } from "@/lib/utils";
-import { SettingsIcon, UsersIcon } from "lucide-react"
+import { BookOpen, CalendarDays, LayoutDashboard, SettingsIcon, Users, UsersIcon } from "lucide-react"
 import Link from "next/link";
-import {GoBook, GoCalendar, GoCheckCircle, GoCheckCircleFill, GoDeviceCameraVideo, GoHome, GoHomeFill, GoOrganization, GoPeople} from "react-icons/go"
+import {GoBook, GoCheckCircle, GoCheckCircleFill, GoDeviceCameraVideo, GoHome, GoHomeFill, GoOrganization, GoPeople} from "react-icons/go"
 
 const routes = [
   {
-    label: "Home",
-    href: "/",
-    icon: GoHome,
-    activeIcon: GoHomeFill
+    label: "Overview",          
+    href: "/overview",
+    icon: LayoutDashboard,
+    activeIcon: LayoutDashboard,
+  },
+  {
+    label: "Students",          
+    href: "/students",
+    icon: Users,
+    activeIcon: Users,
+  },
+  {
+    label: "Classes",          
+    href: "/classes",
+    icon: BookOpen,
+    activeIcon: BookOpen,
+  },
+  { 
+    label: "Schedule", 
+    href: "/sessions",
+    icon: CalendarDays,
+    activeIcon: CalendarDays,
   },
   {
     label: "My Tasks",
@@ -28,30 +46,6 @@ const routes = [
     icon: GoOrganization,      // 团队协作意象
     activeIcon: GoOrganization
   },
-  {
-    label: "Schedule",
-    href: "/dashboard/schedule",
-    icon: GoCalendar,          // 排课日历图标
-    activeIcon: GoCalendar
-  },
-  {
-    label: "My Classes",
-    href: "/dashboard/classes",
-    icon: GoBook,              // 代表课程/班级
-    activeIcon: GoBook
-  },
-  {
-    label: "My Students",
-    href: "/dashboard/students",
-    icon: GoPeople,            // 群体学生意象
-    activeIcon: GoPeople
-  },
-  {
-    label: "Teach",
-    href: "/dashboard/teach",
-    icon: GoDeviceCameraVideo,  // 在线授课意象
-    activeIcon: GoDeviceCameraVideo
-  }
 ];
 
 const Navigation = () => {

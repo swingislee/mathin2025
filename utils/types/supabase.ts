@@ -7,6 +7,540 @@ export type Json =
   | Json[]
 
 export type Database = {
+  edu_assets: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  edu_core: {
+    Tables: {
+      attendance: {
+        Row: {
+          remark: string | null
+          session_id: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          remark?: string | null
+          session_id: string
+          status: string
+          student_id: string
+        }
+        Update: {
+          remark?: string | null
+          session_id?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_student_id_fkey"
+            columns: ["student_id"]
+            referencedRelation: "students"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      class_courses: {
+        Row: {
+          class_id: string
+          course_id: string
+          end_date: string | null
+          start_date: string | null
+        }
+        Insert: {
+          class_id: string
+          course_id: string
+          end_date?: string | null
+          start_date?: string | null
+        }
+        Update: {
+          class_id?: string
+          course_id?: string
+          end_date?: string | null
+          start_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_courses_class_id_fkey"
+            columns: ["class_id"]
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_courses_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_students: {
+        Row: {
+          class_id: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_students_class_id_fkey"
+            columns: ["class_id"]
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_students_student_id_fkey"
+            columns: ["student_id"]
+            referencedRelation: "students"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          assessment_difficulty: string | null
+          campus: string | null
+          class_name: string
+          class_status: string | null
+          classrooms: string | null
+          course_code: string
+          course_fee: number | null
+          courses_name: string | null
+          created_at: string | null
+          current_session: number | null
+          end_time: string | null
+          enrolled_students: number | null
+          grades: string | null
+          id: string
+          is_published: boolean | null
+          max_students: number | null
+          planned_capacity: number | null
+          season: string | null
+          start_time: string | null
+          subject: string | null
+          teacher_id: string | null
+          total_sessions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assessment_difficulty?: string | null
+          campus?: string | null
+          class_name: string
+          class_status?: string | null
+          classrooms?: string | null
+          course_code: string
+          course_fee?: number | null
+          courses_name?: string | null
+          created_at?: string | null
+          current_session?: number | null
+          end_time?: string | null
+          enrolled_students?: number | null
+          grades?: string | null
+          id?: string
+          is_published?: boolean | null
+          max_students?: number | null
+          planned_capacity?: number | null
+          season?: string | null
+          start_time?: string | null
+          subject?: string | null
+          teacher_id?: string | null
+          total_sessions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assessment_difficulty?: string | null
+          campus?: string | null
+          class_name?: string
+          class_status?: string | null
+          classrooms?: string | null
+          course_code?: string
+          course_fee?: number | null
+          courses_name?: string | null
+          created_at?: string | null
+          current_session?: number | null
+          end_time?: string | null
+          enrolled_students?: number | null
+          grades?: string | null
+          id?: string
+          is_published?: boolean | null
+          max_students?: number | null
+          planned_capacity?: number | null
+          season?: string | null
+          start_time?: string | null
+          subject?: string | null
+          teacher_id?: string | null
+          total_sessions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_teacher_id_fkey"
+            columns: ["teacher_id"]
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string | null
+          grade: string
+          id: string
+          level: string | null
+          name: string
+          season: string
+          season_order: number
+          series: string
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          created_at?: string | null
+          grade: string
+          id?: string
+          level?: string | null
+          name: string
+          season: string
+          season_order?: number
+          series: string
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          created_at?: string | null
+          grade?: string
+          id?: string
+          level?: string | null
+          name?: string
+          season?: string
+          season_order?: number
+          series?: string
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      lectures: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          lecture_number: number
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          lecture_number: number
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          lecture_number?: number
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lectures_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          created_at: string | null
+          id: string
+          lecture_id: string
+          notes: string | null
+          title: string | null
+          type: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lecture_id: string
+          notes?: string | null
+          title?: string | null
+          type: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lecture_id?: string
+          notes?: string | null
+          title?: string | null
+          type?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_lecture_id_fkey"
+            columns: ["lecture_id"]
+            referencedRelation: "lectures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          building: string | null
+          capacity: number
+          floor: number
+          id: string
+          room_number: string | null
+        }
+        Insert: {
+          building?: string | null
+          capacity: number
+          floor: number
+          id?: string
+          room_number?: string | null
+        }
+        Update: {
+          building?: string | null
+          capacity?: number
+          floor?: number
+          id?: string
+          room_number?: string | null
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          class_id: string
+          course_id: string
+          created_at: string | null
+          end_time: string | null
+          id: string
+          lecture_id: string | null
+          notes: string | null
+          room_id: string | null
+          start_time: string
+          teacher_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          class_id: string
+          course_id: string
+          created_at?: string | null
+          end_time?: string | null
+          id?: string
+          lecture_id?: string | null
+          notes?: string | null
+          room_id?: string | null
+          start_time: string
+          teacher_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          class_id?: string
+          course_id?: string
+          created_at?: string | null
+          end_time?: string | null
+          id?: string
+          lecture_id?: string | null
+          notes?: string | null
+          room_id?: string | null
+          start_time?: string
+          teacher_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_class_course_fkey"
+            columns: ["class_id", "course_id"]
+            referencedRelation: "class_courses"
+            referencedColumns: ["class_id", "course_id"]
+          },
+          {
+            foreignKeyName: "sessions_class_id_fkey"
+            columns: ["class_id"]
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_lecture_id_fkey"
+            columns: ["lecture_id"]
+            referencedRelation: "lectures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_room_id_fkey"
+            columns: ["room_id"]
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_teacher_id_fkey"
+            columns: ["teacher_id"]
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          contact_info: string | null
+          extra_info: Json | null
+          registration_time: string | null
+          student_id: string
+          student_name: string
+          student_number: string
+          student_status:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
+          study_coins: number | null
+          wechat: string | null
+        }
+        Insert: {
+          contact_info?: string | null
+          extra_info?: Json | null
+          registration_time?: string | null
+          student_id?: string
+          student_name: string
+          student_number?: string
+          student_status?:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
+          study_coins?: number | null
+          wechat?: string | null
+        }
+        Update: {
+          contact_info?: string | null
+          extra_info?: Json | null
+          registration_time?: string | null
+          student_id?: string
+          student_name?: string
+          student_number?: string
+          student_status?:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
+          study_coins?: number | null
+          wechat?: string | null
+        }
+        Relationships: []
+      }
+      teachers: {
+        Row: {
+          created_at: string | null
+          date_of_birth: string | null
+          email: string | null
+          hire_date: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          phone_number: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          phone_number?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          phone_number?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  edu_schedule: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -277,9 +811,7 @@ export type Database = {
     }
     Functions: {
       get_auth: {
-        Args: {
-          p_usename: string
-        }
+        Args: { p_usename: string }
         Returns: {
           username: string
           password: string
@@ -367,12 +899,6 @@ export type Database = {
             foreignKeyName: "note_parent_note_id_fkey"
             columns: ["parent_note_id"]
             referencedRelation: "note"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "note_user_id_fkey1"
-            columns: ["user_id"]
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -464,52 +990,13 @@ export type Database = {
           },
         ]
       }
-      出勤: {
-        Row: {
-          出勤id: string
-          出勤状态: string | null
-          成绩: number | null
-          报名id: string | null
-          课上学习情况: string | null
-          课后作业完成情况: string | null
-          课次编号: string | null
-          进门考成绩: number | null
-        }
-        Insert: {
-          出勤id?: string
-          出勤状态?: string | null
-          成绩?: number | null
-          报名id?: string | null
-          课上学习情况?: string | null
-          课后作业完成情况?: string | null
-          课次编号?: string | null
-          进门考成绩?: number | null
-        }
-        Update: {
-          出勤id?: string
-          出勤状态?: string | null
-          成绩?: number | null
-          报名id?: string | null
-          课上学习情况?: string | null
-          课后作业完成情况?: string | null
-          课次编号?: string | null
-          进门考成绩?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "出勤_报名id_fkey"
-            columns: ["报名id"]
-            referencedRelation: "报名"
-            referencedColumns: ["报名id"]
-          },
-        ]
-      }
       学情统计: {
         Row: {
           created_at: string
           id: number
           学情记录: string | null
           学生id: string
+          当堂课总星数: number | null
           星: number | null
           讲次: number | null
           课程id: string | null
@@ -520,7 +1007,8 @@ export type Database = {
           created_at?: string
           id?: number
           学情记录?: string | null
-          学生id?: string
+          学生id: string
+          当堂课总星数?: number | null
           星?: number | null
           讲次?: number | null
           课程id?: string | null
@@ -532,338 +1020,14 @@ export type Database = {
           id?: number
           学情记录?: string | null
           学生id?: string
+          当堂课总星数?: number | null
           星?: number | null
           讲次?: number | null
           课程id?: string | null
           课程环节?: string | null
           雷?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "学情统计_学生id_fkey"
-            columns: ["学生id"]
-            referencedRelation: "学生档案"
-            referencedColumns: ["学生id"]
-          },
-          {
-            foreignKeyName: "学情统计_课程id_fkey"
-            columns: ["课程id"]
-            referencedRelation: "课程"
-            referencedColumns: ["课程id"]
-          },
-        ]
-      }
-      学生档案: {
-        Row: {
-          其他信息: Json | null
-          学币: number | null
-          学生id: string
-          学生姓名: string
-          学生状态: string | null
-          微信: string | null
-          注册时间: string | null
-          联系方式: string | null
-        }
-        Insert: {
-          其他信息?: Json | null
-          学币?: number | null
-          学生id?: string
-          学生姓名: string
-          学生状态?: string | null
-          微信?: string | null
-          注册时间?: string | null
-          联系方式?: string | null
-        }
-        Update: {
-          其他信息?: Json | null
-          学币?: number | null
-          学生id?: string
-          学生姓名?: string
-          学生状态?: string | null
-          微信?: string | null
-          注册时间?: string | null
-          联系方式?: string | null
-        }
         Relationships: []
-      }
-      家长沟通: {
-        Row: {
-          家长反馈: string | null
-          报名id: string | null
-          沟通id: string
-          沟通内容: string | null
-          沟通方式: string | null
-          沟通时间: string | null
-        }
-        Insert: {
-          家长反馈?: string | null
-          报名id?: string | null
-          沟通id?: string
-          沟通内容?: string | null
-          沟通方式?: string | null
-          沟通时间?: string | null
-        }
-        Update: {
-          家长反馈?: string | null
-          报名id?: string | null
-          沟通id?: string
-          沟通内容?: string | null
-          沟通方式?: string | null
-          沟通时间?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "家长沟通_报名id_fkey"
-            columns: ["报名id"]
-            referencedRelation: "报名"
-            referencedColumns: ["报名id"]
-          },
-        ]
-      }
-      报名: {
-        Row: {
-          报名id: string
-          报名时间: string | null
-          是否支付: boolean | null
-          用户id: string | null
-          课程id: string | null
-          退课状态: string | null
-        }
-        Insert: {
-          报名id?: string
-          报名时间?: string | null
-          是否支付?: boolean | null
-          用户id?: string | null
-          课程id?: string | null
-          退课状态?: string | null
-        }
-        Update: {
-          报名id?: string
-          报名时间?: string | null
-          是否支付?: boolean | null
-          用户id?: string | null
-          课程id?: string | null
-          退课状态?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "报名_用户id_fkey"
-            columns: ["用户id"]
-            referencedRelation: "学生档案"
-            referencedColumns: ["学生id"]
-          },
-          {
-            foreignKeyName: "报名_课程id_fkey"
-            columns: ["课程id"]
-            referencedRelation: "课程"
-            referencedColumns: ["课程id"]
-          },
-        ]
-      }
-      直播课程: {
-        Row: {
-          参与人数: number | null
-          新增关注: number | null
-          直播id: string
-          直播主题: string | null
-          直播内容: string | null
-          直播时间: string | null
-        }
-        Insert: {
-          参与人数?: number | null
-          新增关注?: number | null
-          直播id?: string
-          直播主题?: string | null
-          直播内容?: string | null
-          直播时间?: string | null
-        }
-        Update: {
-          参与人数?: number | null
-          新增关注?: number | null
-          直播id?: string
-          直播主题?: string | null
-          直播内容?: string | null
-          直播时间?: string | null
-        }
-        Relationships: []
-      }
-      练习打卡: {
-        Row: {
-          完成状态: string | null
-          打卡id: string
-          打卡日期: string | null
-          报名id: string | null
-          练习内容: string | null
-        }
-        Insert: {
-          完成状态?: string | null
-          打卡id?: string
-          打卡日期?: string | null
-          报名id?: string | null
-          练习内容?: string | null
-        }
-        Update: {
-          完成状态?: string | null
-          打卡id?: string
-          打卡日期?: string | null
-          报名id?: string | null
-          练习内容?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "练习打卡_报名id_fkey"
-            columns: ["报名id"]
-            referencedRelation: "报名"
-            referencedColumns: ["报名id"]
-          },
-        ]
-      }
-      老师备课: {
-        Row: {
-          备课id: string
-          备课内容: string | null
-          备课日期: string | null
-          老师名称: string | null
-        }
-        Insert: {
-          备课id?: string
-          备课内容?: string | null
-          备课日期?: string | null
-          老师名称?: string | null
-        }
-        Update: {
-          备课id?: string
-          备课内容?: string | null
-          备课日期?: string | null
-          老师名称?: string | null
-        }
-        Relationships: []
-      }
-      考试成绩: {
-        Row: {
-          成绩: number | null
-          报名id: string | null
-          考试id: string
-          考试时间: string | null
-          考试类型: string | null
-        }
-        Insert: {
-          成绩?: number | null
-          报名id?: string | null
-          考试id?: string
-          考试时间?: string | null
-          考试类型?: string | null
-        }
-        Update: {
-          成绩?: number | null
-          报名id?: string | null
-          考试id?: string
-          考试时间?: string | null
-          考试类型?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "考试成绩_报名id_fkey"
-            columns: ["报名id"]
-            referencedRelation: "报名"
-            referencedColumns: ["报名id"]
-          },
-        ]
-      }
-      获客信息: {
-        Row: {
-          沟通时间: string | null
-          沟通结果: string | null
-          用户id: string | null
-          获客id: string
-          获客渠道: string | null
-        }
-        Insert: {
-          沟通时间?: string | null
-          沟通结果?: string | null
-          用户id?: string | null
-          获客id?: string
-          获客渠道?: string | null
-        }
-        Update: {
-          沟通时间?: string | null
-          沟通结果?: string | null
-          用户id?: string | null
-          获客id?: string
-          获客渠道?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "获客信息_用户id_fkey"
-            columns: ["用户id"]
-            referencedRelation: "学生档案"
-            referencedColumns: ["学生id"]
-          },
-        ]
-      }
-      课程: {
-        Row: {
-          开始时间: string | null
-          授课老师: string | null
-          结束时间: string | null
-          课程id: string
-          课程内容: string | null
-          课程名称: string
-          课程类型: string | null
-        }
-        Insert: {
-          开始时间?: string | null
-          授课老师?: string | null
-          结束时间?: string | null
-          课程id?: string
-          课程内容?: string | null
-          课程名称: string
-          课程类型?: string | null
-        }
-        Update: {
-          开始时间?: string | null
-          授课老师?: string | null
-          结束时间?: string | null
-          课程id?: string
-          课程内容?: string | null
-          课程名称?: string
-          课程类型?: string | null
-        }
-        Relationships: []
-      }
-      选拔活动参与: {
-        Row: {
-          参与id: string
-          参与时间: string | null
-          家长反馈: string | null
-          活动名称: string | null
-          活动成绩: number | null
-          用户id: string | null
-        }
-        Insert: {
-          参与id?: string
-          参与时间?: string | null
-          家长反馈?: string | null
-          活动名称?: string | null
-          活动成绩?: number | null
-          用户id?: string | null
-        }
-        Update: {
-          参与id?: string
-          参与时间?: string | null
-          家长反馈?: string | null
-          活动名称?: string | null
-          活动成绩?: number | null
-          用户id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "选拔活动参与_用户id_fkey"
-            columns: ["用户id"]
-            referencedRelation: "学生档案"
-            referencedColumns: ["学生id"]
-          },
-        ]
       }
     }
     Views: {
@@ -887,6 +1051,29 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      asset_movement_type_enum:
+        | "stock_in"
+        | "borrowed"
+        | "returned"
+        | "consumed"
+        | "maintenance"
+        | "retired"
+      asset_status_enum: "available" | "in_use" | "maintenance" | "retired"
+      asset_type_enum:
+        | "office_supply"
+        | "learning_tool"
+        | "furniture"
+        | "electronic_equipment"
+      student_status_enum:
+        | "潜在用户"
+        | "初步了解"
+        | "尝试中"
+        | "已报课"
+        | "停课中"
+        | "已结课"
+        | "已退课"
+        | "长期流失"
+        | "复课"
       user_role: "ADMIN" | "USER" | "TEACHER" | "STUDENT"
     }
     CompositeTypes: {
@@ -906,6 +1093,7 @@ export type Database = {
           owner: string | null
           owner_id: string | null
           public: boolean | null
+          type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
         }
         Insert: {
@@ -918,6 +1106,7 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
         }
         Update: {
@@ -930,9 +1119,108 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
         }
         Relationships: []
+      }
+      buckets_analytics: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          format?: string
+          id: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      iceberg_namespaces: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iceberg_namespaces_bucket_id_fkey"
+            columns: ["bucket_id"]
+            referencedRelation: "buckets_analytics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      iceberg_tables: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          id: string
+          location: string
+          name: string
+          namespace_id: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          id?: string
+          location: string
+          name: string
+          namespace_id: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          namespace_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iceberg_tables_bucket_id_fkey"
+            columns: ["bucket_id"]
+            referencedRelation: "buckets_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "iceberg_tables_namespace_id_fkey"
+            columns: ["namespace_id"]
+            referencedRelation: "iceberg_namespaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       migrations: {
         Row: {
@@ -961,6 +1249,7 @@ export type Database = {
           created_at: string | null
           id: string
           last_accessed_at: string | null
+          level: number | null
           metadata: Json | null
           name: string | null
           owner: string | null
@@ -975,6 +1264,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
+          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -989,6 +1279,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
+          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -1001,6 +1292,37 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prefixes: {
+        Row: {
+          bucket_id: string
+          created_at: string | null
+          level: number
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string | null
+          level?: number
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string | null
+          level?: number
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prefixes_bucketId_fkey"
             columns: ["bucket_id"]
             referencedRelation: "buckets"
             referencedColumns: ["id"]
@@ -1107,31 +1429,40 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_insert_object: {
-        Args: {
-          bucketid: string
-          name: string
-          owner: string
-          metadata: Json
-        }
+      add_prefixes: {
+        Args: { _bucket_id: string; _name: string }
         Returns: undefined
       }
+      can_insert_object: {
+        Args: { bucketid: string; name: string; owner: string; metadata: Json }
+        Returns: undefined
+      }
+      delete_prefix: {
+        Args: { _bucket_id: string; _name: string }
+        Returns: boolean
+      }
       extension: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       filename: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       foldername: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
+        Returns: string[]
+      }
+      get_level: {
+        Args: { name: string }
+        Returns: number
+      }
+      get_prefix: {
+        Args: { name: string }
+        Returns: string
+      }
+      get_prefixes: {
+        Args: { name: string }
         Returns: string[]
       }
       get_size_by_bucket: {
@@ -1196,9 +1527,66 @@ export type Database = {
           metadata: Json
         }[]
       }
+      search_legacy_v1: {
+        Args: {
+          prefix: string
+          bucketname: string
+          limits?: number
+          levels?: number
+          offsets?: number
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          name: string
+          id: string
+          updated_at: string
+          created_at: string
+          last_accessed_at: string
+          metadata: Json
+        }[]
+      }
+      search_v1_optimised: {
+        Args: {
+          prefix: string
+          bucketname: string
+          limits?: number
+          levels?: number
+          offsets?: number
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          name: string
+          id: string
+          updated_at: string
+          created_at: string
+          last_accessed_at: string
+          metadata: Json
+        }[]
+      }
+      search_v2: {
+        Args: {
+          prefix: string
+          bucket_name: string
+          limits?: number
+          levels?: number
+          start_after?: string
+        }
+        Returns: {
+          key: string
+          name: string
+          id: string
+          updated_at: string
+          created_at: string
+          metadata: Json
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      buckettype: "STANDARD" | "ANALYTICS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1206,27 +1594,33 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1234,20 +1628,24 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1255,20 +1653,24 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1276,14 +1678,92 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  edu_assets: {
+    Enums: {},
+  },
+  edu_core: {
+    Enums: {},
+  },
+  edu_schedule: {
+    Enums: {},
+  },
+  graphql_public: {
+    Enums: {},
+  },
+  next_auth: {
+    Enums: {},
+  },
+  pgbouncer: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      asset_movement_type_enum: [
+        "stock_in",
+        "borrowed",
+        "returned",
+        "consumed",
+        "maintenance",
+        "retired",
+      ],
+      asset_status_enum: ["available", "in_use", "maintenance", "retired"],
+      asset_type_enum: [
+        "office_supply",
+        "learning_tool",
+        "furniture",
+        "electronic_equipment",
+      ],
+      student_status_enum: [
+        "潜在用户",
+        "初步了解",
+        "尝试中",
+        "已报课",
+        "停课中",
+        "已结课",
+        "已退课",
+        "长期流失",
+        "复课",
+      ],
+      user_role: ["ADMIN", "USER", "TEACHER", "STUDENT"],
+    },
+  },
+  storage: {
+    Enums: {
+      buckettype: ["STANDARD", "ANALYTICS"],
+    },
+  },
+} as const

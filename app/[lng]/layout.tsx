@@ -42,7 +42,7 @@ export default async function RootLayout(
     <SessionProvider session={session}>
     <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
       <head />
-      <body>
+      <body suppressHydrationWarning>
       <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -9,7 +9,7 @@ import { FaStar, FaBolt } from 'react-icons/fa'; // 引入react-icons中的星�
 
 export default function Page() {
   const supabase = createClient();
-  const [students, setStudents] = useState<Database["public"]["Tables"]["学生档案"]["Row"][]>([]);
+  const [students, setStudents] = useState<Database["edu_core"]["Tables"]["students"]["Row"][]>([]);
   const [loading, setLoading] = useState(true);
   const [studentStats, setStudentStats] = useState<{ [key: string]: { stars: number, thunders: number } }>({});
   const [courseStages] = useState<string[]>(["新知1", "1", "2", "3", "新知2", "4", "5", "6", "7","挑战1", "挑战2"]);
@@ -19,10 +19,12 @@ export default function Page() {
     const fetchStudents = async () => {
       try {
         const { data, error } = await supabase
-          .from('学生档案')
+          .schema('edu_core')
+          .from('students')
           .select('*');
 
         if (error) {
+          console.log(error)
           throw error;
         }
 
@@ -31,7 +33,7 @@ export default function Page() {
         
         // 初始化每个学生的星星和雷
         const initialStats = data.reduce((acc, student) => {
-          acc[student.学生id] = { stars: 0, thunders: 0 }; // 初始化星星和雷的数量
+          acc[student.student_id] = { stars: 0, thunders: 0 }; // 初始化星星和雷的数量
           return acc;
         }, {} as { [key: string]: { stars: number, thunders: number } });
 
@@ -178,20 +180,20 @@ const handleDecreaseThunder = async (studentId: string) => {
       {/* 学生卡片 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {students.map((student) => (
-          <Card key={student.学生id} className="border border-gray-300 shadow-md relative">
+          <Card key={student.student_id} className="border border-gray-300 shadow-md relative">
             <CardHeader>
-              <CardTitle>{student.学生姓名}</CardTitle>
+              <CardTitle>{student.student_name}</CardTitle>
               <div className="absolute top-0 right-0 p-2 space-x-1">
-                <Button onClick={() => handleIncreaseStar(student.学生id)} variant="outline" size={"icon"}>
+                <Button onClick={() => handleIncreaseStar(student.student_id)} variant="outline" size={"icon"}>
                   <FaStar className='text-yellow-500'/>
                 </Button>
-                <Button onClick={() => handleDecreaseStar(student.学生id)} variant="outline" size={"icon"}>
+                <Button onClick={() => handleDecreaseStar(student.student_id)} variant="outline" size={"icon"}>
                   <FaStar className='text-slate-400'/>
                 </Button>
-                <Button onClick={() => handleIncreaseThunder(student.学生id)} variant="outline" size={"icon"}>
+                <Button onClick={() => handleIncreaseThunder(student.student_id)} variant="outline" size={"icon"}>
                   <FaBolt className='text-blue-500'/>
                 </Button>
-                <Button onClick={() => handleDecreaseThunder(student.学生id)} variant="outline" size={"icon"}>
+                <Button onClick={() => handleDecreaseThunder(student.student_id)} variant="outline" size={"icon"}>
                 <FaBolt className='text-slate-400'/>
                 </Button>
               </div>
@@ -200,12 +202,12 @@ const handleDecreaseThunder = async (studentId: string) => {
               <div className="flex flex-col justify-between">
                 <div className="flex items-center">
                   <span className="flex flex-wrap text-yellow-500 mr-2">
-                    {renderIcons(studentStats[student.学生id]?.stars || 0, <FaStar />)}
+                    {renderIcons(studentStats[student.student_id]?.stars || 0, <FaStar />)}
                   </span>
                 </div>
                 <div className="flex pt-2 flex-wrap items-center">
                   <span className="flex text-blue-500 mr-2">
-                    {renderIcons(studentStats[student.学生id]?.thunders || 0, <FaBolt />)}
+                    {renderIcons(studentStats[student.student_id]?.thunders || 0, <FaBolt />)}
                   </span>
                 </div>
               </div>
