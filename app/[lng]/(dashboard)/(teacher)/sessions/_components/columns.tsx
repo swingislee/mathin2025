@@ -2,37 +2,11 @@ import { ColumnDef } from '@tanstack/react-table'
 import { parseISO } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
-import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from 'next/link'
-// 复用你定义的类型
-export type SessionRecord = {
-  id: string
-  class_id: string
-  course_id: string
-  lecture_id: string | null
-  start_time: string
-  end_time: string | null
-  room_id: string | null
-  teacher_id: string | null
-  notes: string | null
-  created_at: string | null
-  updated_at: string | null
 
-  classes:  { class_name: string }     | null
-  courses:  { name:       string }     | null
-  lectures: { title:      string | null } | null
-  teachers: { name:       string }     | null
-  rooms:    { room_number: string | null } | null
-}
+import Link from 'next/link'
+import { SessionRecord } from '@/action/teacher/lessons'
+
 
 const TZ = 'Asia/Shanghai'
 const fmt = (iso: string) =>

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { BookOpen, CalendarDays, LayoutDashboard, SettingsIcon, Users, UsersIcon } from "lucide-react"
+import { BookOpen, CalendarDays, LayoutDashboard, SettingsIcon, Users } from "lucide-react"
 import Link from "next/link";
-import {GoBook, GoCheckCircle, GoCheckCircleFill, GoDeviceCameraVideo, GoHome, GoHomeFill, GoOrganization, GoPeople} from "react-icons/go"
+import { GoCheckCircle, GoCheckCircleFill, GoOrganization} from "react-icons/go"
 
 const routes = [
   {
