@@ -36,7 +36,7 @@ export const fetchSessions = async () => {
     `)
 
     if (error) {
-        console.log(error)
+        console.log("fetch sessions",error)
         throw error;
     }
 

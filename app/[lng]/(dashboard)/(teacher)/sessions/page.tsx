@@ -1,18 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 
 import { DataTable } from "./_components/data-table";
 import { sessionColumns } from "./_components/columns"
 
-import { fetchSessions } from "@/action/teacher/lessons";
-import type {SessionRecord} from "@/action/teacher/lessons"
+import { fetchSessions } from "@/action/teacher/fetch-sessions";
+import type {SessionRecord} from "@/action/teacher/fetch-sessions"
 
 
 
 export default function Page() {
-  const session =useSession();
   const [lessones, setLessones] = useState<SessionRecord[]>([]);
  
 

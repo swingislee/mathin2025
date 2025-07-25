@@ -246,6 +246,49 @@ export type Database = {
         }
         Relationships: []
       }
+      lecture_resources: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          display_order: number
+          id: string
+          lecture_id: string
+          slot: string
+          template_id: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          lecture_id: string
+          slot: string
+          template_id: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          lecture_id?: string
+          slot?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lecture_resources_lecture_id_fkey"
+            columns: ["lecture_id"]
+            referencedRelation: "lectures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lecture_resources_template_id_fkey"
+            columns: ["template_id"]
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lectures: {
         Row: {
           course_id: string
@@ -287,41 +330,28 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          lecture_id: string
-          notes: string | null
-          title: string | null
+          metadata: Json | null
+          name: string
+          storage_path: string
           type: string
-          updated_at: string | null
-          url: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          lecture_id: string
-          notes?: string | null
-          title?: string | null
+          metadata?: Json | null
+          name: string
+          storage_path: string
           type: string
-          updated_at?: string | null
-          url: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          lecture_id?: string
-          notes?: string | null
-          title?: string | null
+          metadata?: Json | null
+          name?: string
+          storage_path?: string
           type?: string
-          updated_at?: string | null
-          url?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "resources_lecture_id_fkey"
-            columns: ["lecture_id"]
-            referencedRelation: "lectures"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       rooms: {
         Row: {

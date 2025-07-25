@@ -5,7 +5,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from "@/components/ui/button"
 
 import Link from 'next/link'
-import { SessionRecord } from '@/action/teacher/lessons'
+import { SessionRecord } from '@/action/teacher/fetch-sessions'
 
 
 const TZ = 'Asia/Shanghai'
