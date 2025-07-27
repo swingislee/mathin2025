@@ -11,13 +11,9 @@ export const getUserByEmail = async (email: string) => {
         .eq('email', email) // Filter to match the email
         .single(); // Ensures that only one record is returned, or null
 
-        // console.log("already exit",data)
     return data;
 
-
-
   } catch (error) {
-    console.log(error)
       return null;
   }
 };

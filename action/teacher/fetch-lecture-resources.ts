@@ -1,49 +1,105 @@
 "use server";
 
-import { auth } from "@/auth"
-import { createClient } from "@/utils/supabase/RLSserver"
+import { auth } from "@/auth";
+import { createClient } from "@/utils/supabase/RLSserver";
+import type { Database } from "@/utils/types/supabase";
 
-export async function fetchLectureResources(sessionId: string) {
-  const session = await auth()
-  const supabase = await createClient(session)
+type SessionRow = Database["edu_core"]["Tables"]["sessions"]["Row"];
+type LectureRow = Database["edu_core"]["Tables"]["lectures"]["Row"];
+type LRRow      = Database["edu_core"]["Tables"]["lecture_resources"]["Row"];
+type RTRow      = Database["edu_core"]["Tables"]["resources"]["Row"];
 
-  const { data:lectureResoure, error:lectureResoureError } = await supabase
-    .schema('edu_core')
-    .from('sessions')
-    .select(`
-        id,
-        start_time,
-        end_time,
-        notes,
+export type SessionWithResources = Omit<SessionRow, "lectures"> & {
+  lectures:
+    | (LectureRow & {
+        lecture_resources: (LRRow & {
+          resources: RTRow & { signedURL?: string; componentURL?: string };
+        })[];
+      })
+    | null;
+};
 
-        lectures (
-        lecture_number,
-        title,
+export async function fetchLectureResources(
+  sessionId: string
+): Promise<SessionWithResources[]> {
+  // 1. 身份验证 & 创建有权限访问私有 bucket 的客户端
+  const session = await auth();
+  const supabase = await createClient(session);
 
+  // 2. 拉取基础数据：session → lectures → lecture_resources → resources
+  const { data: sessions, error: sesErr } = await supabase
+    .schema("edu_core")
+    .from("sessions")
+    .select(
+      `
+      *,
+      lectures (
+        *, 
         lecture_resources (
-            slot,
-            display_order,
-            config,
-
-            resources (
-            id,
-            name,
-            type,
-            storage_path,
-            metadata
-            )
+          *, 
+          resources (*)
         )
-        )
-    `)
-    .eq('id', sessionId)
+      )
+    `
+    )
+    .eq("id", sessionId);
 
+  if (sesErr) throw sesErr;
+  if (!sessions) return [];
 
-  if (lectureResoureError) {
-    console.error('拉取资源失败', lectureResoureError)
-    throw lectureResoureError
-  }
+  // 3. 为每个资源生成签名 URL 或直接使用 URL
+  return Promise.all(
+    sessions.map(async (s) => {
+      if (!s.lectures) {
+        return { ...s, lectures: null };
+      }
 
+      // 遍历 lecture_resources，异步处理资源
+      const enrichedLRs = await Promise.all(
+        s.lectures.lecture_resources.map(async (lr) => {
+          const resource = lr.resources;
 
+          if (resource.storage_path) {
+            console.log("相对路径",resource.storage_path)
+            const pathWithoutBucket = resource.storage_path.replace("2025-lecture-resource/", "");
+            const { data: urlData, error: urlErr } = await supabase.storage
+              .from("2025-lecture-resource")  // 你的存储桶名称
+              .createSignedUrl(pathWithoutBucket, 3600); // 1 小时后过期
 
-  return lectureResoure
+            if (urlErr) {
+              console.error("签名 URL 生成失败", urlErr);
+            }
+
+            return {
+              ...lr,
+              config: lr.config ?? {},
+              resources: {
+                ...resource,
+                signedURL: urlData?.signedUrl, // 返回签名 URL
+              },
+            };
+          } else if (resource.component_path) {
+            // 对于 React 组件，直接返回 component_path
+            return {
+              ...lr,
+              config: lr.config ?? {},
+              resources: {
+                ...resource,
+                componentURL: resource.component_path, // 直接使用组件 URL
+              },
+            };
+          }
+
+          return lr; // 如果都没有，则不做任何处理
+        })
+      );
+
+      const lec = {
+        ...s.lectures,
+        lecture_resources: enrichedLRs,
+      };
+
+      return { ...s, lectures: lec };
+    })
+  );
 }

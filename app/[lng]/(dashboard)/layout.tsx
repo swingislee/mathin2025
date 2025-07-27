@@ -35,10 +35,15 @@ export default async function RootLayout(
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-        <main className='w-full'>
+        <div className="flex flex-col w-full h-screen">
+        {/* Navbar */}
         <Navbar />
-          {children}
-        </main>
+
+        {/* Main content */}
+        <main className="min-h-0 flex-grow w-full">
+            {children}
+          </main>
+      </div>
     </SidebarProvider>
   )
 }

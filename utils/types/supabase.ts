@@ -253,8 +253,9 @@ export type Database = {
           display_order: number
           id: string
           lecture_id: string
+          resource_id: string
           slot: string
-          template_id: string
+          updated_at: string | null
         }
         Insert: {
           config?: Json | null
@@ -262,8 +263,9 @@ export type Database = {
           display_order?: number
           id?: string
           lecture_id: string
+          resource_id: string
           slot: string
-          template_id: string
+          updated_at?: string | null
         }
         Update: {
           config?: Json | null
@@ -271,8 +273,9 @@ export type Database = {
           display_order?: number
           id?: string
           lecture_id?: string
+          resource_id?: string
           slot?: string
-          template_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -282,8 +285,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "lecture_resources_template_id_fkey"
-            columns: ["template_id"]
+            foreignKeyName: "lecture_resources_resource_id_fkey"
+            columns: ["resource_id"]
             referencedRelation: "resources"
             referencedColumns: ["id"]
           },
@@ -328,28 +331,34 @@ export type Database = {
       }
       resources: {
         Row: {
+          component_path: string | null
           created_at: string | null
           id: string
           metadata: Json | null
           name: string
-          storage_path: string
+          storage_path: string | null
           type: string
+          updated_at: string | null
         }
         Insert: {
+          component_path?: string | null
           created_at?: string | null
           id?: string
           metadata?: Json | null
           name: string
-          storage_path: string
+          storage_path?: string | null
           type: string
+          updated_at?: string | null
         }
         Update: {
+          component_path?: string | null
           created_at?: string | null
           id?: string
           metadata?: Json | null
           name?: string
-          storage_path?: string
+          storage_path?: string | null
           type?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

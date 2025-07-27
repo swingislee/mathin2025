@@ -34,6 +34,7 @@ export const fetchSessions = async () => {
       teachers(name),
       rooms   (room_number)
     `)
+    .order('start_time', { ascending: true })
 
     if (error) {
         console.log("fetch sessions",error)
