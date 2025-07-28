@@ -60,7 +60,6 @@ export async function fetchLectureResources(
           const resource = lr.resources;
 
           if (resource.storage_path) {
-            console.log("相对路径",resource.storage_path)
             const pathWithoutBucket = resource.storage_path.replace("2025-lecture-resource/", "");
             const { data: urlData, error: urlErr } = await supabase.storage
               .from("2025-lecture-resource")  // 你的存储桶名称
