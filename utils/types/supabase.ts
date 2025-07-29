@@ -7,6 +7,23 @@ export type Json =
   | Json[]
 
 export type Database = {
+  edu_assets: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   edu_core: {
     Tables: {
       attendance: {
@@ -40,6 +57,40 @@ export type Database = {
             columns: ["student_id"]
             referencedRelation: "students"
             referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      class_courses: {
+        Row: {
+          class_id: string
+          course_id: string
+          end_date: string | null
+          start_date: string | null
+        }
+        Insert: {
+          class_id: string
+          course_id: string
+          end_date?: string | null
+          start_date?: string | null
+        }
+        Update: {
+          class_id?: string
+          course_id?: string
+          end_date?: string | null
+          start_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_courses_class_id_fkey"
+            columns: ["class_id"]
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_courses_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -78,8 +129,9 @@ export type Database = {
           class_name: string
           class_status: string | null
           classrooms: string | null
+          course_code: string
           course_fee: number | null
-          course_id: string | null
+          courses_name: string | null
           created_at: string | null
           current_session: number | null
           end_time: string | null
@@ -102,8 +154,9 @@ export type Database = {
           class_name: string
           class_status?: string | null
           classrooms?: string | null
+          course_code: string
           course_fee?: number | null
-          course_id?: string | null
+          courses_name?: string | null
           created_at?: string | null
           current_session?: number | null
           end_time?: string | null
@@ -126,8 +179,9 @@ export type Database = {
           class_name?: string
           class_status?: string | null
           classrooms?: string | null
+          course_code?: string
           course_fee?: number | null
-          course_id?: string | null
+          courses_name?: string | null
           created_at?: string | null
           current_session?: number | null
           end_time?: string | null
@@ -145,12 +199,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "classes_course_id_fkey"
-            columns: ["course_id"]
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "courses_teacher_id_fkey"
             columns: ["teacher_id"]
@@ -203,6 +251,7 @@ export type Database = {
           config: Json | null
           created_at: string | null
           display_order: number
+          id: string
           lecture_id: string
           resource_id: string
           slot: string
@@ -212,6 +261,7 @@ export type Database = {
           config?: Json | null
           created_at?: string | null
           display_order?: number
+          id?: string
           lecture_id: string
           resource_id: string
           slot: string
@@ -221,6 +271,7 @@ export type Database = {
           config?: Json | null
           created_at?: string | null
           display_order?: number
+          id?: string
           lecture_id?: string
           resource_id?: string
           slot?: string
@@ -285,7 +336,6 @@ export type Database = {
           id: string
           metadata: Json | null
           name: string
-          order: number | null
           storage_path: string | null
           type: string
           updated_at: string | null
@@ -296,7 +346,6 @@ export type Database = {
           id?: string
           metadata?: Json | null
           name: string
-          order?: number | null
           storage_path?: string | null
           type: string
           updated_at?: string | null
@@ -307,7 +356,6 @@ export type Database = {
           id?: string
           metadata?: Json | null
           name?: string
-          order?: number | null
           storage_path?: string | null
           type?: string
           updated_at?: string | null
@@ -380,6 +428,12 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "sessions_class_course_fkey"
+            columns: ["class_id", "course_id"]
+            referencedRelation: "class_courses"
+            referencedColumns: ["class_id", "course_id"]
+          },
+          {
             foreignKeyName: "sessions_class_id_fkey"
             columns: ["class_id"]
             referencedRelation: "classes"
@@ -419,6 +473,9 @@ export type Database = {
           student_id: string
           student_name: string
           student_number: string
+          student_status:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
           study_coins: number | null
           wechat: string | null
         }
@@ -429,6 +486,9 @@ export type Database = {
           student_id?: string
           student_name: string
           student_number?: string
+          student_status?:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
           study_coins?: number | null
           wechat?: string | null
         }
@@ -439,6 +499,9 @@ export type Database = {
           student_id?: string
           student_name?: string
           student_number?: string
+          student_status?:
+            | Database["public"]["Enums"]["student_status_enum"]
+            | null
           study_coins?: number | null
           wechat?: string | null
         }
@@ -486,6 +549,23 @@ export type Database = {
         }
         Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  edu_schedule: {
+    Tables: {
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
@@ -1671,7 +1751,13 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  edu_assets: {
+    Enums: {},
+  },
   edu_core: {
+    Enums: {},
+  },
+  edu_schedule: {
     Enums: {},
   },
   graphql_public: {
