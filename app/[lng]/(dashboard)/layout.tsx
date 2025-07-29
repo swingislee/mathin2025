@@ -40,7 +40,7 @@ export default async function RootLayout(
         <Navbar />
 
         {/* Main content */}
-        <main className="min-h-0 flex-grow w-full">
+        <main className="min-h-0 min-w-0 grow w-full">
             {children}
           </main>
       </div>
