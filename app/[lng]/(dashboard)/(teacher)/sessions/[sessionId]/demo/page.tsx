@@ -1,111 +1,129 @@
 'use client'
 
-import { fetchLectureResources ,SessionWithResources} from '@/action/teacher/fetch-lecture-resources';
+import { fetchLectureResources, SessionWithResources } from '@/action/teacher/fetch-lecture-resources'
 import { useParams } from 'next/navigation'
-import { useEffect, useState,useMemo } from 'react';
-import Image from 'next/image';
-import WhiteToolbar from '@/components/handwriting/WhiteToolbar';
-import { CanvasBoard } from '@/components/handwriting/CanvasBoard';
-import { useCanvasControl } from '@/components/handwriting/canvasStore';
+import { useEffect, useState, useMemo } from 'react'
+import Image from 'next/image'
+import WhiteToolbar from '@/components/handwriting/WhiteToolbar'
+import { CanvasBoard } from '@/components/handwriting/CanvasBoard'
+import { useCanvasControl } from '@/components/handwriting/canvasStore'
+import { ResourcePager } from '../../_components/ResourcePager'
+import { fetchStudents,StudentsRow } from '@/action/teacher/fetch-students'
+import { json } from 'stream/consumers'
+import { StudentRanking } from '../../_components/StudentRanking'
+
+type StudentWithStars = StudentsRow & { starsThisSession?: number }
+
 
 export default function Page() {
-  const params = useParams<{ sessionId: string }>();
-  const [sessions, setSessions] = useState<SessionWithResources[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const { tool } = useCanvasControl();
+  const { sessionId } = useParams<{ sessionId: string }>()
+  const [sessions, setSessions] = useState<SessionWithResources[]>([])
+  const [selectedIndex, setSelectedIndex] = useState(0)
+const [students, setStudents] = useState<StudentWithStars[]>([])
+  const { tool } = useCanvasControl()
 
-  // 拉取数据
+  // Fetch and initialize
   useEffect(() => {
-    fetchLectureResources(params.sessionId)
+    fetchLectureResources(sessionId)
       .then(data => {
-        setSessions(data);
-        setSelectedIndex(0);
+        setSessions(data)
+        setSelectedIndex(0)
       })
-      .catch(err => console.error('fetchLectureResources error:', err));
-  }, [params.sessionId]);
+      .catch(err => console.error('fetchLectureResources error:', err))
 
+    fetchStudents(sessionId)
+      .then(data => {
+        setStudents(data.map(s => ({ ...s, starsThisSession: 0 })))
+      })
+      .catch(console.error)
+  }, [sessionId])
+
+  // Flatten, filter for “main” slot, sort by display_order
   const mainResources = useMemo(() => {
     return sessions
-      .filter(s => s.lectures != null)
-      .flatMap(s => s.lectures!.lecture_resources)
+      .flatMap(s => s.lectures?.lecture_resources ?? [])
       .filter(r => r.slot === 'main' && r.resources.metadata != null)
-      .sort((a, b) => a.display_order - b.display_order);
-  }, [sessions]);
+      .sort((a, b) => a.display_order - b.display_order)
+  }, [sessions])
 
-  const current = mainResources[selectedIndex];
+  // Current resource (may be undefined if no resources yet)
+  const current = mainResources[selectedIndex]
+
+  // 简单的加星函数
+  const handleAddStar = (studentId: string) => {
+    setStudents(prev =>
+      prev.map(s =>
+        s.student_id === studentId
+          ? { ...s, starsThisSession: (s.starsThisSession ?? 0) + 1 }
+          : s
+      )
+    )
+  }
 
   return (
-    <>
-      {/* <pre>{JSON.stringify(lectureResource, null, 2)}</pre> */}
-        
-        <div className="flex h-full overflow-hidden">
-          {/* 左侧绿色区域 */}
-          <div className="bg-green-400 w-1/5 shrink-0 p-4">
-            {/* 这里可以添加左侧内容 */}
+    <div className="flex h-full overflow-hidden bg-amber-200">
+
+      {/* main */}
+        <main className="relative flex flex-col flex-grow justify-center items-start min-w-0">
+          {/* 主板书 */}
+  <div
+            className="relative aspect-[4/3] max-h-full overflow-hidden shadow-lg flex-shrink-0"
+            style={{ width: 'min(100%, calc(100vh * 4 / 3))' }}
+        >          {/* Background media */}
+          <div className="absolute inset-0 z-10 shadow-2xl">
+            {current?.resources.type === 'image' && (
+              <Image
+                src={current.resources.signedURL!}
+                alt={(current.resources.metadata as { title: string }).title}
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            )}
+            {current?.resources.type === 'video' && (
+              <video
+                src={current.resources.signedURL!}
+                className="w-full h-full"
+                controls
+              />
+            )}
           </div>
-
-          {/* 中间 */}
-          <main className="flex-col relative flex max-h-full flex-grow justify-center bg-red-300 items-start">
-            {/* 主板书区域 */}
-            <div className="w-full h-auto max-h-full aspect-[4/3] relative overflow-hidden bg-yellow-400 shadow-lg">
-              <div className="absolute z-10 top-0 left-0 w-full h-full">              
-                {current?.resources.type === 'image' && (
-                  <Image
-                    src={current.resources.signedURL!}
-                    alt={(current.resources.metadata as { title: string }).title}
-                    fill={true}  // 图片会填充父容器
-                    style={{
-                      objectFit: 'contain',  // 保持宽高比，避免裁剪
-                    }}
-                  />
-                )}
-                {current?.resources.type === 'video' && (
-                  <video
-                    src={current.resources.signedURL!}
-                    className="w-full h-full"
-                    controls
-                  />
-                )}
-              </div>
-    
-              <div className="absolute z-20 top-0 left-0 w-full h-full " style={{ pointerEvents: tool==='pointer' ? 'none' : 'auto' }}>   
-                <CanvasBoard lessonId={params.sessionId} name="主画板"/>
-              </div>             
-            </div>
-
-            <div className="flex justify-center absolute z-50 w-full bg-green-300 bottom-0 h-12">
-              <WhiteToolbar/>
-            </div>
-
-          </main>
-
-          {/* 右侧蓝色区域 */}
-          <div className="bg-blue-400 relative w-1/5 p-4">
-            <CanvasBoard lessonId={`${params.sessionId}-side`} name="副画板"/>
-            <div className="mt-4 flex justify-between items-center">
-            <button
-              disabled={selectedIndex <= 0}
-              className="px-2 py-1 bg-white rounded disabled:opacity-50"
-              onClick={() => setSelectedIndex(i => Math.max(i - 1, 0))}
-            >
-              上一页
-            </button>
-            <span className="text-sm">
-              {selectedIndex + 1} / {mainResources.length}
-            </span>
-            <button
-              disabled={selectedIndex >= mainResources.length - 1}
-              className="px-2 py-1 bg-white rounded disabled:opacity-50"
-              onClick={() => setSelectedIndex(i => Math.min(i + 1, mainResources.length - 1))}
-            >
-              下一页
-            </button>
+          {/* Canvas overlay */}
+          <div
+            className="absolute inset-0 z-20"
+            style={{ pointerEvents: tool === 'pointer' ? 'none' : 'auto' }}
+          >
+            <CanvasBoard lessonId={sessionId} name="主画板" />
+          </div>
         </div>
 
-          </div>
-          
-      
+        {/* Toolbar */}
+        <div className="absolute bottom-0 z-50 flex w-full h-12 justify-center">
+          <WhiteToolbar />
         </div>
-    </>
-  );
+      </main>
+
+      {/* Right (Blue) */}
+      <div className="w-96 py-2 pr-0 pl-2 flex flex-col h-full">
+        {/* 让这个 div 占满剩余空间 */}
+        <div className="flex-1 m-2 bg-white relative overflow-auto rounded-lg shadow-lg">
+          <CanvasBoard lessonId={`${sessionId}-side`} name="副画板" />
+        </div>
+
+        {/* Pager 在底部 */}
+        <div className="mt-2">
+          <ResourcePager
+            selectedIndex={selectedIndex}
+            total={mainResources.length}
+            onPrev={() => setSelectedIndex(i => Math.max(i - 1, 0))}
+            onNext={() => setSelectedIndex(i => Math.min(i + 1, mainResources.length - 1))}
+          />
+        </div>        
+      </div>  
+
+      <div className="py-2 pr-2 pl-0 w-1/6 shrink-0">
+        <StudentRanking students={students} onAddStar={handleAddStar} />
+      </div>
+    </div>
+  )
 }
