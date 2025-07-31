@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
-import { createClient } from "@/utils/supabase/RLSserver";
+import { createClient } from "@/utils/supabase/server";
 import type { Database } from "@/utils/types/supabase";
 
 type SessionRow = Database["edu_core"]["Tables"]["sessions"]["Row"];
@@ -23,8 +22,7 @@ export async function fetchLectureResources(
   sessionId: string
 ): Promise<SessionWithResources[]> {
   // 1. 身份验证 & 创建有权限访问私有 bucket 的客户端
-  const session = await auth();
-  const supabase = await createClient(session);
+  const supabase = await createClient();
 
   // 2. 拉取基础数据：session → lectures → lecture_resources → resources
   const { data: sessions, error: sesErr } = await supabase

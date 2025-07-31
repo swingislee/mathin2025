@@ -1,17 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server'
 import acceptLanguage from 'accept-language'
 import { fallbackLng, languages, cookieName } from '@/lib/i18n/settings'
-import authConfig from './auth.config'
-import NextAuth from 'next-auth'
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
-  authRoutes, 
-  publicPages, 
+  authRoutes,
+  publicPages,
   publicRoute
 } from "@/routes"
-
-const { auth } = NextAuth(authConfig)
+import { createServerClient } from "@supabase/ssr"
 
 acceptLanguage.languages(languages)
 
@@ -28,7 +25,25 @@ export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 }
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    {
+      cookies: {
+        getAll: () => req.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          for (const { name, value, options } of cookiesToSet) {
+            res.cookies.set(name, value, options);
+          }
+        },
+      },
+    }
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const isLoggedIn = !!session;
 
 
   // console.log("--------------------------------------");
@@ -44,11 +59,8 @@ export default auth((req) => {
   // console.log(`Is API Auth Route: ${isApiAuthRoute}`);
 
   if (isApiAuthRoute) {
-    // console.log("API Route.");
     return NextResponse.next();
   }
-
-  const isLoggedIn = !!req.auth; // Check user login status
   // console.log(`Is Logged In: ${isLoggedIn}`);
   
   const hasLanguagePrefix = languages.some(lang => path.startsWith(`/${lang}`));
@@ -97,7 +109,7 @@ export default auth((req) => {
   if (req.headers.has('referer')) {
     const refererUrl = new URL(req.headers.get('referer') || '')
     const lngInReferer = languages.find((l) => refererUrl.pathname.startsWith(`/${l}`))
-    const response = NextResponse.next()
+    const response = res
     // console.log("Referer found. Setting language cookie based on referer.");
 
     if (lngInReferer) response.cookies.set(cookieName, lngInReferer);
@@ -105,5 +117,5 @@ export default auth((req) => {
   }
 
   // console.log("No action taken, proceeding with request.");
-  return NextResponse.next();
-})
+  return res;
+}

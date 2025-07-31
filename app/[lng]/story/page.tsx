@@ -1,6 +1,5 @@
 import { Translate } from "@/lib/i18n";
 import Link from "next/link";
-import { auth } from "@/auth";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { createClient } from "@/utils/supabase/server"
 
@@ -12,10 +11,9 @@ export default async function storyPage (props: {
   const params = await props.params
   const lng = params.lng;
   const { t } = await Translate(lng)
-  const session = await auth()
-  const user = session?.user;
-
   const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
 
     const { data, error } = await supabase
       .schema('edu_core')

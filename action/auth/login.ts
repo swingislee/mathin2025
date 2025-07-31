@@ -5,8 +5,6 @@ import bcrypt from "bcryptjs"
 import { LoginSchema } from "@/schemas/auth";
 import { getUserByEmail } from "@/data/auth/user";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { signIn } from "@/auth";
-import { AuthError } from "next-auth";
 import { 
   generateVerificationToken,
   generateTwoFactorToken 
@@ -119,23 +117,14 @@ export const login = async (
     }
   }
 
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: callbackUrl || `/${lng}${DEFAULT_LOGIN_REDIRECT}`,
-    })
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
 
-
-  } catch (error) {
-    if (error instanceof AuthError){
-      switch(error.type){
-        case "CredentialsSignin":
-           return { error:"invalid credentials!" }
-        default:
-          return { error:"something went wrong" }
-      }
-    }
-    throw error;
+  if (signInError) {
+    return { error: signInError.message }
   }
+
+  return { success: "Logged in", redirectTo: callbackUrl || `/${lng}${DEFAULT_LOGIN_REDIRECT}` }
 }

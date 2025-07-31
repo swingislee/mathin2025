@@ -17,7 +17,7 @@ import { useCanvasControl, Tool } from './canvasStore';
 
 
 export default function WhiteToolbar({ children }: { children?: React.ReactNode }) {
-  const { tool, color, setTool, setColor, sizePx, setSizePx,clearBoards, boards,selectedBoardIds, toggleSelectedBoard, resetSelectedBoards  } = useCanvasControl();
+  const { tool, color, setTool, setColor, sizePx, setSizePx,clearBoards, boards,selectedBoardIds, toggleSelectedBoard  } = useCanvasControl();
   const [showCustomColor, setShowCustomColor] = useState(false);
   const [lastEraser, setLastEraser] = useState<Tool>('strokeEraser');
   const [sliderValue, setSliderValue] = useState(0);
