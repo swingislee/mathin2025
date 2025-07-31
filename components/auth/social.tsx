@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { FaWeixin } from "react-icons/fa";
 import { BsTencentQq } from "react-icons/bs";
 import { FaGithub } from "react-icons/fa";
-import { signIn } from "next-auth/react";
+import { createClient } from '@/utils/supabase/client'
 
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
@@ -49,9 +49,13 @@ export const Social = () => {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl");
     
-    const onClick = (provider: "wechat" | "qq" | "github") => {
-        signIn(provider,{
-            callbackUrl: callbackUrl || `/${params.lng}${DEFAULT_LOGIN_REDIRECT}`
+    const onClick = async (provider: "wechat" | "qq" | "github") => {
+        const supabase = createClient()
+        await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+                redirectTo: callbackUrl || `/${params.lng}${DEFAULT_LOGIN_REDIRECT}`
+            }
         })
     }
     return(

@@ -76,16 +76,6 @@ export default function Page() {
   }, [])
 
 
-  // 简单的加星函数
-  const handleAddStar = (studentId: string) => {
-    setStudents(prev =>
-      prev.map(s =>
-        s.student_id === studentId
-          ? { ...s, starsThisSession: (s.starsThisSession ?? 0) + 1 }
-          : s
-      )
-    )
-  }
 
   return (
     <div className="flex h-full overflow-hidden">

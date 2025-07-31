@@ -1,7 +1,7 @@
-import { useSession } from "next-auth/react"
+import { useSupabaseSession } from "./use-supabase-session"
 
 export const useCurrentRole = () => {
-  const session =useSession();
-  
-  return session.data?.user?.role
+  const session = useSupabaseSession();
+
+  return session?.user?.user_metadata?.role as string | undefined
 };

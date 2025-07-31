@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react'
-import { StarIcon, PlusCircle, MoreVertical } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { StarIcon, MoreVertical } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { StudentsRow } from '@/action/teacher/fetch-students'
 
@@ -18,11 +17,9 @@ export function StudentRanking({
   pageIndex,
 }: StudentRankingProps) {
   /* ──────────────── Supabase client ──────────────── */
-  const { data: session } = useSession()
-  
   const supabase = useMemo(
-    () => createClient(session?.supabaseAccessToken),
-    [session?.supabaseAccessToken],
+    () => createClient(),
+    []
   )
 
   /* ──────────────── 本地状态 ──────────────── */

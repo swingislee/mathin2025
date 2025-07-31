@@ -1,6 +1,5 @@
 "use server";
-import { auth } from "@/auth";
-import { createClient } from "@/utils/supabase/RLSserver";
+import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/utils/types/supabase";
 
 type SessionRow = Database['edu_core']['Tables']['sessions']['Row']
@@ -20,8 +19,7 @@ export type SessionRecord = SessionRow & {
 }
 
 export const fetchSessions = async () => {
-    const session = await auth();
-    const supabase = await createClient(session);
+    const supabase = await createClient();
 
     const { data , error } = await supabase
     .schema('edu_core')

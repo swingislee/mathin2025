@@ -4,7 +4,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
-import { useSession } from "next-auth/react";
+import { useSupabaseSession } from "@/hooks/use-supabase-session";
 import { useState, useTransition } from "react";
 
 import { settings } from "@/action/auth/settings";
@@ -23,9 +23,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 
 const SettingsPage = () => {
-  const session = useSession();
+  const session = useSupabaseSession();
   const user = useCurrentUser();
-  const { update } = useSession();
 
   const [error,setError] = useState<string | undefined>("");
 	const [success,setSuccess] = useState<string | undefined>("");
@@ -53,7 +52,6 @@ const SettingsPage = () => {
           }
 
           if (data.success) {
-            update();
             setSuccess(data.success)
           }
         })

@@ -3,7 +3,6 @@
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 
-import { unstable_update } from "@/auth";
 import { createClient } from "@/utils/supabase/server";
 import { SettingsSchema } from "@/schemas/auth";
 import { getUserByEmail, getUserById } from "@/data/auth/user";
@@ -86,15 +85,6 @@ export const settings = async (
     .single();
 
   if (!updatedUser) return { error: "Something went wrong" };
-  
-  unstable_update({
-    user: {
-      name: updatedUser.name,
-      email: updatedUser.email,
-      is2FAEnabled: updatedUser.is2FAEnabled!,
-      role: updatedUser.role,
-    }
-  });
 
   return { success: "Settings Updated!" }
 }

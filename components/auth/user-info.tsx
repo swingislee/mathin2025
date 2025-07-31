@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { User } from "next-auth";
+import { User } from "@supabase/supabase-js";
 
 
 interface UserInfoProps {

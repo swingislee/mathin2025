@@ -1,19 +1,19 @@
-import { auth } from "@/auth";
+import { createClient } from "@/utils/supabase/server";
 
 export const currentUser = async () => {
-  const session = await auth();
-  
-  return session?.user;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  return data.user;
 };
 
 export const currentRole = async () => {
-  const session = await auth();
-  
-  return session?.user?.role;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  return data.user?.user_metadata?.role as string | undefined;
 };
 
 export const currentAccessToken = async () => {
-  const session = await auth();
-  
-  return session?.supabaseAccessToken;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token;
 };

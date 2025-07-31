@@ -5,7 +5,6 @@ import {
   useEffect, useRef, useState,useMemo
 } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { useSession } from 'next-auth/react';
 import { getStroke } from 'perfect-freehand';
 import { v4 as uuid } from 'uuid';
 import { useCanvasControl } from './canvasStore';
@@ -37,10 +36,9 @@ export function CanvasBoard({
 }: { lessonId: string; name: string }) {
 
   /* Supabase (带 RLS) */
-  const { data: session } = useSession();
   const supabase = useMemo(
-    () => createClient(session?.supabaseAccessToken),
-    [session?.supabaseAccessToken]
+    () => createClient(),
+    []
   );
 
   const { color, sizePx, tool, registerBoard, unregisterBoard  } = useCanvasControl();
@@ -107,7 +105,7 @@ export function CanvasBoard({
     };
     resize();
     const ro=new ResizeObserver(resize);
-    containerRef.current && ro.observe(containerRef.current);
+    if (containerRef.current) ro.observe(containerRef.current);
     window.addEventListener('resize',resize);
     return ()=>{ro.disconnect();window.removeEventListener('resize',resize);};
   },[]);

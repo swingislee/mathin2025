@@ -1,9 +1,8 @@
 'use server';
 
-import { signOut } from "@/auth";
+import { createClient } from "@/utils/supabase/server";
 
 export const logout = async () => {
-
-  await signOut();
-
+  const supabase = await createClient();
+  await supabase.auth.signOut();
 };
