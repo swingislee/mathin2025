@@ -28,18 +28,19 @@ export function StudentRanking({
 
   // 在布局后测量，并在窗口尺寸变化或 students 改变时重新计算
   useLayoutEffect(() => {
-      function calcMax() {
-        const el = starAreaRef.current
-        if (!el) return
+    function calcMax() {
+      const area = starAreaRef.current
+      if (!area) return
 
-        const ICON_W = 16      // .w-4
-        const GAP     = 4      // .gap-1
-        const available = el.clientWidth        // 直接用星星区域真实宽度
+      const icon      = area.querySelector('svg') as SVGElement | null
+      const iconW     = icon ? icon.getBoundingClientRect().width : 16
+      const gap       = parseFloat(getComputedStyle(area).columnGap) || 4
 
-        // 最后一个 icon 右侧没有 gap，要补回一个 GAP
-        const max = Math.floor((available + GAP) / (ICON_W + GAP))
-        setMaxIcons(max > 0 ? max : 0)
-      }
+      const available = area.clientWidth
+      const max = Math.floor((available + gap) / (iconW + gap))
+
+      setMaxIcons(max)
+    }
 
     calcMax()
     window.addEventListener('resize', calcMax)

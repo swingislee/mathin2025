@@ -10,7 +10,6 @@ import { useCanvasControl } from '@/components/handwriting/canvasStore'
 import { ResourcePager } from '../../_components/ResourcePager'
 import { fetchStudents,StudentsRow } from '@/action/teacher/fetch-students'
 import { StudentRanking } from '../../_components/StudentRanking'
-import { cn } from '@/lib/utils'
 
 type StudentWithStars = StudentsRow & { starsThisSession?: number }
 
@@ -23,8 +22,6 @@ export default function Page() {
   const { tool } = useCanvasControl()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const boardRef = useRef<HTMLDivElement>(null)
-
-  const [useHeightFirst, setUseHeightFirst] = useState(false)
 
   // Fetch and initialize
   useEffect(() => {
@@ -61,10 +58,10 @@ export default function Page() {
     const calc = () => {
       const { width: W, height: H } = wrap.getBoundingClientRect()
 
-      let w = W, h = (W * 3) / 4    // 先假设用宽度算高度
+      let w = W, h = (W * 9) / 16    // 先假设用宽度算高度
       if (h > H) {                  // 竖屏时高度超了
         h = H
-        w = (H * 4) / 3             // 用高度反算宽度
+        w = (H * 16) / 9             // 用高度反算宽度
       }
 
       // 直接写行内样式，彻底跳过 Safari 的 flex 逻辑
@@ -91,70 +88,91 @@ export default function Page() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden bg-amber-200">
+    <div className="flex h-full overflow-hidden">
 
-       {/* main */}
-      <main ref={wrapperRef} className="relative flex flex-col pl-4 flex-grow justify-center max-h-full items-start min-h-0 min-w-0 ">
-        {/* 主板书 */}
-        <div
-          ref={boardRef}
-          className="relative overflow-hidden shadow-lg mx-auto"
-        >       
-          
-          {/* Background media */}
-          <div className="absolute inset-0 z-10 shadow-2xl">
-            {current?.resources.type === 'image' && (
-              <Image
-                src={current.resources.signedURL!}
-                alt={(current.resources.metadata as { title: string }).title}
-                fill
-                style={{ objectFit: 'contain' }}
-                priority
-              />
-            )}
-            {current?.resources.type === 'video' && (
-              <video
-                src={current.resources.signedURL!}
-                className="w-full h-full"
-                controls
-              />
-            )}
-          </div>
-          {/* Canvas overlay */}
-          <div
-            className="absolute inset-0 z-20"
-            style={{ pointerEvents: tool === 'pointer' ? 'none' : 'auto' }}
-          >
-            <CanvasBoard lessonId={sessionId} name="主画板" />
-          </div>
-        </div>
-
+       {/* main  */}
+      <main 
+        ref={wrapperRef} 
+        className="flex flex-grow bg-amber-200 justify-center items-center max-h-full min-h-0 min-w-0"  
+        onDragStart={e => e.preventDefault()}
+        onContextMenu={e => e.preventDefault()}
+        style={{
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+          WebkitTouchCallout: 'none',
+          touchAction: 'none'
+        }}
+      >
         {/* Toolbar */}
         <div className="absolute bottom-0 z-50 flex w-full h-12 justify-center">
-          <WhiteToolbar />
+          <WhiteToolbar>
+            <ResourcePager
+              selectedIndex={selectedIndex}
+              pages={mainResources.map((r, i) => ({
+                index: i,
+                label: (r.resources.metadata as { title: string }).title,
+              }))}
+              onSelect={i => setSelectedIndex(i)}
+              onPrev={() => setSelectedIndex(i => Math.max(i - 1, 0))}
+              onNext={() => setSelectedIndex(i => Math.min(i + 1, mainResources.length - 1))}
+            />
+          </WhiteToolbar>
+        </div>
+
+        <div
+          ref={boardRef}
+          className="relative flex overflow-hidden"
+        >
+
+          <div className='relative aspect-[4/3]  overflow-hidden rounded-2xl'>
+
+
+      
+            {/* Background media */}
+            <div className="absolute inset-0 z-10 shadow-2xl ">
+              {current?.resources.type === 'image' && (
+                <Image
+                  src={current.resources.signedURL!}
+                  alt={(current.resources.metadata as { title: string }).title}
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              )}
+              {current?.resources.type === 'video' && (
+                <video
+                  src={current.resources.signedURL!}
+                  className="w-full h-full"
+                  controls
+                />
+              )}
+            </div>
+            {/* 主板书 */}
+            <div
+              className="absolute inset-0 z-20"
+              style={{ pointerEvents: tool === 'pointer' ? 'none' : 'auto' }}
+            >
+              <CanvasBoard lessonId={sessionId} name="主画板" />
+            </div>
+          </div>
+
+          <div className="relative flex-1 m-2 overflow-hidden bg-white rounded-2xl shadow-lg">
+            <CanvasBoard
+              lessonId={`${sessionId}-side`}
+              name="副画板"            
+            />
+            <div className="absolute w-full mt-2 bottom-0">
+
+            </div> 
+          </div>
         </div>
       </main>
 
-      {/* Right (Blue) */}
-      <div className="w-1/5 py-2 pr-0 pl-2 flex flex-col h-full">
-        {/* 让这个 div 占满剩余空间 */}
-        <div className="flex-1 m-2 bg-white relative overflow-auto rounded-lg shadow-lg">
-          <CanvasBoard lessonId={`${sessionId}-side`} name="副画板" />
-        </div>
-
-        {/* Pager 在底部 */}
-        <div className="mt-2">
-          <ResourcePager
-            selectedIndex={selectedIndex}
-            total={mainResources.length}
-            onPrev={() => setSelectedIndex(i => Math.max(i - 1, 0))}
-            onNext={() => setSelectedIndex(i => Math.min(i + 1, mainResources.length - 1))}
-          />
-        </div>        
-      </div>  
 
       <div className="py-2 pr-2 pl-0 w-1/6 shrink-0">
         <StudentRanking students={students} onAddStar={handleAddStar} />
+                {/* Pager 在底部 */}
+   
       </div>
     </div>
   )

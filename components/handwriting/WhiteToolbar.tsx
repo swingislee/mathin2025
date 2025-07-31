@@ -16,9 +16,7 @@ import { HueSlider } from './colorslider';
 import { useCanvasControl, Tool } from './canvasStore';
 
 
-
-
-export default function WhiteToolbar() {
+export default function WhiteToolbar({ children }: { children?: React.ReactNode }) {
   const { tool, color, setTool, setColor, sizePx, setSizePx,clearBoards, boards,selectedBoardIds, toggleSelectedBoard, resetSelectedBoards  } = useCanvasControl();
   const [showCustomColor, setShowCustomColor] = useState(false);
   const [lastEraser, setLastEraser] = useState<Tool>('strokeEraser');
@@ -41,13 +39,13 @@ export default function WhiteToolbar() {
 
 
   return (
-    <div className=" flex items-center bg-white/80 backdrop-blur p-2 shadow-md rounded-xl">
+    <div className=" flex items-center bg-white/80 backdrop-blur p-2 shadow-md rounded-xl select-none">
 
       {/* 指针 */}
       <Button
         size="icon"
         variant={tool === 'pointer' ? 'default' : 'ghost'}
-        className='mx-2'
+        className='mx-1'
         onClick={() => setTool('pointer')}
       >
         <MousePointer2 />
@@ -57,7 +55,7 @@ export default function WhiteToolbar() {
       <Button
         size="icon"
         variant={tool === 'pen' ? 'default' : 'ghost'}
-        className='mx-2'
+        className='mx-1'
         onClick={() => setTool('pen')}
       >
         <Pencil />
@@ -65,7 +63,7 @@ export default function WhiteToolbar() {
 
       {/* 橡皮主按钮 + 子菜单 */}
       <Popover>
-        <div className="flex items-center gap-0.5 mx-2">
+        <div className="flex items-center gap-0.5 mx-1">
           <Button
             size="icon"
             variant={isEraserActive ? 'default' : 'ghost'}
@@ -101,7 +99,7 @@ export default function WhiteToolbar() {
       <div className="h-6 w-px bg-gray-300 mx-2" />
 
       {/* 颜色选择 */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         {colors.map(c => (
           <Button
             key={c}
@@ -133,7 +131,7 @@ export default function WhiteToolbar() {
       {/* 粗细选择 */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="icon" variant="ghost">
+          <Button size="icon" variant="ghost" className='mx-1'>
             <Sliders />
           </Button>
         </PopoverTrigger>
@@ -159,68 +157,66 @@ export default function WhiteToolbar() {
         </PopoverContent>
       </Popover>
 
-      <div className="h-6 w-px bg-gray-300 mx-2" />
-
       {/* 清屏按钮（滑动确认） */}
-<Popover>
-  <PopoverTrigger asChild>
-    <Button size="default" variant="destructive">
-      <Trash2 className="mr-1" />
-      清屏
-    </Button>
-  </PopoverTrigger>
-  <PopoverContent className="min-w-0 w-32 p-4 space-y-4">
-  {/* 标题与复选列表 */}
-  <div>
-    <div className="text-sm font-semibold mb-2">选择要清除的画板</div>
-    <div className="space-y-1 max-h-32 overflow-y-auto pl-1">
-      {boards.map(b => (
-        <label key={b.id} className="flex items-center space-x-2 text-sm">
-          <input
-            type="checkbox"
-            className="accent-red-500"
-            checked={selectedBoardIds.includes(b.id)}
-            onChange={() => toggleSelectedBoard(b.id)}
-          />
-          <span>{b.name}</span>
-        </label>
-      ))}
-    </div>
-  </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button size="icon" variant="destructive" className='mx-1'>
+            <Trash2 />
 
-  {/* 分隔线 */}
-  <div className="h-px bg-gray-300" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="min-w-0 w-32 p-4 space-y-4">
+        {/* 标题与复选列表 */}
+        <div>
+          <div className="text-sm font-semibold mb-2">选择要清除的画板</div>
+          <div className="space-y-1 max-h-32 overflow-y-auto pl-1">
+            {boards.map(b => (
+              <label key={b.id} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="accent-red-500"
+                  checked={selectedBoardIds.includes(b.id)}
+                  onChange={() => toggleSelectedBoard(b.id)}
+                />
+                <span>{b.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-  {/* 滑动确认 */}
-  <div className="space-y-2">
-    <div className="text-sm text-gray-700 text-center">
-      滑动确认
-    </div>
-    <div className="w-24 mx-auto">
-      <ShadcnSlider
-        min={0}
-        max={100}
-        step={1}
-        value={[sliderValue]}
-        onValueChange={([v]) => setSliderValue(v)}
-        onValueCommit={([v]) => {
-          if (v === 100) {
-            clearBoards(selectedBoardIds);
-          }
-          setSliderValue(0);
-        }}
-        className="cursor-pointer touch-none"
-      />
-    </div>
-    <div className="text-xs text-red-500 text-center mt-1">
-      此操作不可撤销
-    </div>
-  </div>
-</PopoverContent>
+        {/* 分隔线 */}
+        <div className="h-px bg-gray-300" />
 
-</Popover>
+        {/* 滑动确认 */}
+        <div className="space-y-2">
+          <div className="text-sm text-gray-700 text-center">
+            滑动确认
+          </div>
+          <div className="w-24 mx-auto">
+            <ShadcnSlider
+              min={0}
+              max={100}
+              step={1}
+              value={[sliderValue]}
+              onValueChange={([v]) => setSliderValue(v)}
+              onValueCommit={([v]) => {
+                if (v === 100) {
+                  clearBoards(selectedBoardIds);
+                }
+                setSliderValue(0);
+              }}
+              className="cursor-pointer touch-none"
+            />
+          </div>
+          <div className="text-xs text-red-500 text-center mt-1">
+            此操作不可撤销
+          </div>
+        </div>
+      </PopoverContent>
 
-
+      </Popover>
+      {children && <div className="h-6 w-px bg-gray-300 mx-2" />}
+      {children}
     </div>
   );
 }
