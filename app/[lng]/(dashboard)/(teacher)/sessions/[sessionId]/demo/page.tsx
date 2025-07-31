@@ -170,9 +170,11 @@ export default function Page() {
 
 
       <div className="py-2 pr-2 pl-0 w-1/6 shrink-0">
-        <StudentRanking students={students} onAddStar={handleAddStar} />
-                {/* Pager 在底部 */}
-   
+        <StudentRanking
+          students={students}
+          sessionId={sessionId}
+          pageIndex={selectedIndex}
+        />   
       </div>
     </div>
   )

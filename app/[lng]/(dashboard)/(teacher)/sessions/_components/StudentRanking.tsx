@@ -1,44 +1,158 @@
 'use client'
 
-import { useState, useRef, useLayoutEffect } from 'react'
-import { StarIcon, PlusCircle } from 'lucide-react'
+import { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react'
+import { StarIcon, PlusCircle, MoreVertical } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { createClient } from '@/utils/supabase/client'
+import { StudentsRow } from '@/action/teacher/fetch-students'
 
-export type Student = {
-  student_id: string
-  student_name: string
-  starsThisSession?: number
+interface StudentRankingProps {
+  students: StudentsRow[]
+  sessionId: string
+  pageIndex: number
 }
 
 export function StudentRanking({
   students,
-  onAddStar,
-}: {
-  students: Student[]
-  onAddStar: (studentId: string) => void
-}) {
-  // 填满 20 个槽位
+  sessionId,
+  pageIndex,
+}: StudentRankingProps) {
+  /* ──────────────── Supabase client ──────────────── */
+  const { data: session } = useSession()
+  
+  const supabase = useMemo(
+    () => createClient(session?.supabaseAccessToken),
+    [session?.supabaseAccessToken],
+  )
+
+  /* ──────────────── 本地状态 ──────────────── */
+  const [starsMap, setStarsMap] = useState<Record<string, number>>({})
+
+  /* ──────────────── 拉历史 + 订阅实时变动 ──────────────── */
+  useEffect(() => {
+    if (!supabase) return
+
+    let channel: ReturnType<typeof supabase.channel> | undefined
+
+    async function init() {
+      /* 1. 先拉一次历史数据 */
+      const { data, error } = await supabase
+        .schema('edu_core')
+        .from('student_stars')
+        .select('student_id')
+        .eq('session_id', sessionId)
+
+      if (error) {
+        console.error('fetch student_stars error →', error)
+        return
+      }
+
+      const map: Record<string, number> = {}
+      data?.forEach(r => {
+        map[r.student_id] = (map[r.student_id] || 0) + 1
+      })
+      setStarsMap(map)
+
+      console.log("init start")
+      /* 2. 创建 Realtime 通道 */
+      channel = supabase
+        .channel('student_stars_changes')
+        // INSERT
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'edu_core',
+            table: 'student_stars',
+            filter: `session_id=eq.${sessionId}`,
+          },
+          payload => {
+            console.log("payload",payload)
+            setStarsMap(prev => ({
+              ...prev,
+              [payload.new.student_id]:
+                (prev[payload.new.student_id] || 0) + 1,
+            }))
+          },
+        )
+        // DELETE
+        .on(
+          'postgres_changes',
+          {
+            event: 'DELETE',
+            schema: 'edu_core',
+            table: 'student_stars',
+            filter: `session_id=eq.${sessionId}`,
+          },
+          payload => {
+            setStarsMap(prev => {
+              const sid = payload.old.student_id
+              const cnt = Math.max((prev[sid] || 1) - 1, 0)
+              return { ...prev, [sid]: cnt }
+            })
+          },
+        )
+        .subscribe(status => console.log('channel status →', status))
+    }
+
+    init()
+
+    return () => {
+      if (channel) supabase.removeChannel(channel)
+    }
+  }, [supabase, sessionId])
+
+  /* ──────────────── 点名加 / 减星 ──────────────── */
+  const handleAddStar = async (studentId: string) => {
+    await supabase
+      .schema('edu_core')
+      .from('student_stars')
+      .insert({
+        session_id: sessionId,
+        student_id: studentId,
+        page_index: pageIndex,
+      })
+  }
+
+  const handleRemoveStar = async (studentId: string) => {
+    const { data } = await supabase
+      .schema('edu_core')
+      .from('student_stars')
+      .select('id')
+      .eq('session_id', sessionId)
+      .eq('student_id', studentId)
+      .limit(1)
+
+    if (data?.[0]?.id) {
+      await supabase
+        .schema('edu_core')
+        .from('student_stars')
+        .delete()
+        .eq('id', data[0].id)
+    }
+  }
+
+  /* ──────────────── 20 个槽位 ──────────────── */
   const slots = [
     ...students,
     ...Array(Math.max(0, 20 - students.length)).fill(null),
   ].slice(0, 20)
 
-  // 用于测量第一行星星可用宽度
+  /* ──────────────── 计算单行可展示星星数 ──────────────── */
   const starAreaRef = useRef<HTMLDivElement>(null)
   const [maxIcons, setMaxIcons] = useState(0)
 
-  // 在布局后测量，并在窗口尺寸变化或 students 改变时重新计算
   useLayoutEffect(() => {
     function calcMax() {
       const area = starAreaRef.current
       if (!area) return
 
-      const icon      = area.querySelector('svg') as SVGElement | null
-      const iconW     = icon ? icon.getBoundingClientRect().width : 16
-      const gap       = parseFloat(getComputedStyle(area).columnGap) || 4
+      const icon = area.querySelector('svg') as SVGElement | null
+      const iconW = icon ? icon.getBoundingClientRect().width : 16
+      const gap = parseFloat(getComputedStyle(area).columnGap) || 4
 
       const available = area.clientWidth
       const max = Math.floor((available + gap) / (iconW + gap))
-
       setMaxIcons(max)
     }
 
@@ -47,6 +161,7 @@ export function StudentRanking({
     return () => window.removeEventListener('resize', calcMax)
   }, [students])
 
+  /* ──────────────── JSX ──────────────── */
   return (
     <div className="h-full flex flex-col p-2">
       <div className="grid grid-rows-20 gap-1 flex-1">
@@ -57,38 +172,48 @@ export function StudentRanking({
           >
             {stu ? (
               <>
-                {/* 姓名，固定不收缩 */}
-                <span className="shrink-0 text-sm font-medium truncate">
+                {/* 姓名：点击加星 */}
+                <span
+                  className="shrink-0 text-sm font-medium truncate cursor-pointer transition-transform hover:scale-105"
+                  onClick={() => handleAddStar(stu.student_id)}
+                >
                   {stu.student_name}
                 </span>
 
-                {/* 星星 区域，第一行绑定 ref，左右留空隙 */}
+                {/* Star 区域 */}
                 <div
                   ref={idx === 0 ? starAreaRef : undefined}
-                  className="ml-4 flex-1 flex items-center gap-1 overflow-hidden min-w-0"
+                  className="ml-2 flex gap-x-1"
                 >
-                  {/* 超出 maxIcons 则显示数字 */}
-                  {(stu.starsThisSession ?? 0) > maxIcons ? (
-                    <span className="text-sm text-yellow-500 font-semibold">
-                      ⭐ × {stu.starsThisSession}
-                    </span>
-                  ) : (
-                    [...Array(stu.starsThisSession ?? 0)].map((_, i) => (
-                      <StarIcon
-                        key={i}
-                        className="w-4 h-4 text-yellow-400 fill-current shrink-0"
-                      />
-                    ))
-                  )}
+                  {(() => {
+                    const count = starsMap[stu.student_id] || 0
+                    if (count === 0) return null
+                    if (count > maxIcons) {
+                      return (
+                        <span
+                          className="text-sm text-yellow-500 font-semibold cursor-pointer"
+                          onClick={() => handleRemoveStar(stu.student_id)}
+                        >
+                          ⭐ × {count}
+                        </span>
+                      )
+                    }
+                    return Array(count)
+                      .fill(0)
+                      .map((_, i) => (
+                        <StarIcon
+                          key={i}
+                          className="w-4 h-4 text-yellow-400 fill-current shrink-0 cursor-pointer transition-transform hover:scale-125"
+                          onClick={() => handleRemoveStar(stu.student_id)}
+                        />
+                      ))
+                  })()}
                 </div>
 
-                {/* 加星按钮，固定在最右 */}
-                <button
-                  className="shrink-0 ml-4 text-green-500 hover:text-green-600"
-                  onClick={() => onAddStar(stu.student_id)}
-                >
-                  <PlusCircle className="w-5 h-5" />
-                </button>
+                {/* 预留扩展按钮 */}
+                <div className="shrink-0 ml-auto">
+                  <MoreVertical className="w-5 h-5 text-gray-500 hover:text-gray-700 cursor-pointer" />
+                </div>
               </>
             ) : (
               <div className="w-full h-full bg-white rounded" />

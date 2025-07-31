@@ -46,14 +46,17 @@ export type Database = {
       class_students: {
         Row: {
           class_id: string
+          id: string
           student_id: string
         }
         Insert: {
           class_id: string
+          id?: string
           student_id: string
         }
         Update: {
           class_id?: string
+          id?: string
           student_id?: string
         }
         Relationships: [
@@ -408,6 +411,43 @@ export type Database = {
             columns: ["teacher_id"]
             referencedRelation: "teachers"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_stars: {
+        Row: {
+          created_at: string
+          id: string
+          page_index: number
+          session_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_index: number
+          session_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_index?: number
+          session_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_stars_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_stars_student_id_fkey"
+            columns: ["student_id"]
+            referencedRelation: "students"
+            referencedColumns: ["student_id"]
           },
         ]
       }
