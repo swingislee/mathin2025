@@ -39,7 +39,7 @@ export default function WhiteToolbar({ children }: { children?: React.ReactNode 
 
 
   return (
-    <div className=" flex items-center bg-white/80 backdrop-blur p-2 shadow-md rounded-xl select-none">
+    <div className=" flex items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur p-2 shadow-md rounded-xl select-none">
 
       {/* 指针 */}
       <Button

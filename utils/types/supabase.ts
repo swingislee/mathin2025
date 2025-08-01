@@ -531,7 +531,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      remove_latest_star: {
+        Args: {
+          p_session_id: string
+          p_student_id: string
+          p_page_index?: number
+        }
+        Returns: {
+          deleted_id: string
+        }[]
+      }
+      stars_by_session: {
+        Args: { p_session_id: string; p_page_index?: number }
+        Returns: {
+          student_id: string
+          stars: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
@@ -988,6 +1004,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_2fa_enabled: boolean | null
+          name: string | null
+          role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          is_2fa_enabled?: boolean | null
+          name?: string | null
+          role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_2fa_enabled?: boolean | null
+          name?: string | null
+          role?: string | null
+        }
+        Relationships: []
       }
       学情统计: {
         Row: {

@@ -1,19 +1,13 @@
-import { auth } from "@/auth";
+import { createClient } from "@/utils/supabase/server";
+
 
 export const currentUser = async () => {
-  const session = await auth();
-  
-  return session?.user;
-};
+  const supabase = await createClient()
 
-export const currentRole = async () => {
-  const session = await auth();
-  
-  return session?.user?.role;
-};
-
-export const currentAccessToken = async () => {
-  const session = await auth();
-  
-  return session?.supabaseAccessToken;
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error) {
+    console.error('获取当前用户失败：', error)
+    return null
+  }
+  return user
 };

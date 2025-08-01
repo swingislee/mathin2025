@@ -5,8 +5,6 @@ import { languages, fallbackLng } from '@/lib/i18n/settings'
 import { Translate } from '@/lib/i18n'
 import Footer from '@/components/Footer'
 import { ThemeProvider } from "@/components/providers/theme-provider"
-import { SessionProvider } from 'next-auth/react'
-import { auth }  from '@/auth'
 import { Toaster } from "@/components/ui/sonner"
 
 type Params = Promise<{ lng: string }>
@@ -36,10 +34,8 @@ export default async function RootLayout(
 ) {
   const { lng } = await props.params;
   const { children } = props;
-  const session = await auth();
 
   return (
-    <SessionProvider session={session}>
     <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
       <head />
       <body suppressHydrationWarning>
@@ -57,7 +53,6 @@ export default async function RootLayout(
         </ThemeProvider>  
       </body>
     </html>
-    </SessionProvider>
   )
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchLectureResources, SessionWithResources } from '@/action/teacher/fetch-lecture-resources'
+
 import { useParams } from 'next/navigation'
  import { useEffect, useState, useMemo, useRef, useLayoutEffect } from 'react'
 import Image from 'next/image'
@@ -8,17 +8,17 @@ import WhiteToolbar from '@/components/handwriting/WhiteToolbar'
 import { CanvasBoard } from '@/components/handwriting/CanvasBoard'
 import { useCanvasControl } from '@/components/handwriting/canvasStore'
 import { ResourcePager } from '../../_components/ResourcePager'
+
+import { fetchLectureResources, SessionWithResources } from '@/action/teacher/fetch-lecture-resources'
 import { fetchStudents,StudentsRow } from '@/action/teacher/fetch-students'
 import { StudentRanking } from '../../_components/StudentRanking'
-
-type StudentWithStars = StudentsRow & { starsThisSession?: number }
 
 
 export default function Page() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const [sessions, setSessions] = useState<SessionWithResources[]>([])
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [students, setStudents] = useState<StudentWithStars[]>([])
+  const [students, setStudents] = useState<StudentsRow[]>([])
   const { tool } = useCanvasControl()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const boardRef = useRef<HTMLDivElement>(null)
@@ -76,16 +76,6 @@ export default function Page() {
   }, [])
 
 
-  // 简单的加星函数
-  const handleAddStar = (studentId: string) => {
-    setStudents(prev =>
-      prev.map(s =>
-        s.student_id === studentId
-          ? { ...s, starsThisSession: (s.starsThisSession ?? 0) + 1 }
-          : s
-      )
-    )
-  }
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -93,7 +83,7 @@ export default function Page() {
        {/* main  */}
       <main 
         ref={wrapperRef} 
-        className="flex flex-grow bg-amber-200 justify-center items-center max-h-full min-h-0 min-w-0"  
+        className="flex flex-grow bg-amber-200 dark:bg-inherit justify-center items-center max-h-full min-h-0 min-w-0"  
         onDragStart={e => e.preventDefault()}
         onContextMenu={e => e.preventDefault()}
         style={{
@@ -121,7 +111,7 @@ export default function Page() {
 
         <div
           ref={boardRef}
-          className="relative flex overflow-hidden"
+          className="relative flex"
         >
 
           <div className='relative aspect-[4/3]  overflow-hidden rounded-2xl'>

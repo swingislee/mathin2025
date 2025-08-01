@@ -1,11 +1,9 @@
 "use server";
 
-import { auth } from "@/auth"
-import { createClient } from "@/utils/supabase/RLSserver"
+import { createClient } from "@/utils/supabase/server"
 
 export async function fetchLectureResources(sessionId: string) {
-  const session = await auth()
-  const supabase = await createClient(session)
+  const supabase = await createClient()
 
   const { data, error } = await supabase
     .schema('edu_core')
