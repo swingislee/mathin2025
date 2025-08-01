@@ -11,7 +11,7 @@ const TestServerPage = async () => {
     
       <UserInfo
         label="Server components"
-        user = {user}
+        user = {user ?? undefined}
       />
     </div>
   );

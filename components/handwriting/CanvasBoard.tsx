@@ -2,7 +2,8 @@
 'use client';
 
 import {
-  useEffect, useRef, useState,useMemo
+  useEffect, useRef, useState,useMemo,
+  useCallback
 } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { getStroke } from 'perfect-freehand';
@@ -55,39 +56,51 @@ export function CanvasBoard({
   const strokes   = useRef<Map<string,StrokeNorm>>(new Map());
 
   /* ---------- helpers ---------- */
-  const sendOp = (op: WhiteboardOp) =>
-    supabase.channel(`lesson:${lessonId}`)
-            .send({ type:'broadcast', event:'OP', payload: op });
+  const sendOp = useCallback((op: WhiteboardOp) => {
+    supabase
+      .channel(`lesson:${lessonId}`)
+      .send({ type: 'broadcast', event: 'OP', payload: op })
+  }, [lessonId,supabase])
 
-  const drawStroke = (
-    ctx:CanvasRenderingContext2D, s:StrokeNorm, cw:number, ch:number
-  )=>{
-    const pts=s.points.map(([xn,yn])=>[xn*cw,yn*ch]);
-    const outline=getStroke(pts,{
-      size:s.wNorm*cw, thinning:.7, smoothing:.6, streamline:.5
-    });
-    const p=new Path2D(outline.reduce(
-      (a,[x,y],i)=>a+`${i?'L':'M'}${x} ${y} `,'')+'Z');
-    ctx.fillStyle=s.color;
-    ctx.fill(p);
-  };
+  const drawStroke = useCallback(
+    (ctx: CanvasRenderingContext2D, s: StrokeNorm, cw: number, ch: number) => {
+      const pts = s.points.map(([xn, yn]) => [xn * cw, yn * ch])
+      const outline = getStroke(pts, {
+        size: s.wNorm * cw,
+        thinning: .7,
+        smoothing: .6,
+        streamline: .5,
+      })
+      const path = new Path2D(
+        outline.reduce((acc, [x, y], i) => acc + `${i ? 'L' : 'M'}${x} ${y} `, '') + 'Z'
+      )
+      ctx.fillStyle = s.color
+      ctx.fill(path)
+    },
+    []
+  )
 
-  const drawFragErase = (
-    ctx:CanvasRenderingContext2D, s:StrokeNorm, cw:number,ch:number
-  )=>{
-    ctx.save();
-    ctx.globalCompositeOperation='destination-out';
-    drawStroke(ctx,{...s,color:'#000'},cw,ch);
-    ctx.restore();
-  };
+  const drawFragErase = useCallback(
+    (ctx: CanvasRenderingContext2D, s: StrokeNorm, cw: number, ch: number) => {
+      ctx.save()
+      ctx.globalCompositeOperation = 'destination-out'
+      // 把 color 强制改成黑色擦除
+      drawStroke(ctx, { ...s, color: '#000' }, cw, ch)
+      ctx.restore()
+    },
+    [drawStroke]
+  )
 
-  const redrawAll = ()=>{
-    const base=baseRef.current; if(!base) return;
-    const ctx=base.getContext('2d')!;
-    ctx.clearRect(0,0,base.width,base.height);
-    for(const s of strokes.current.values())
-      drawStroke(ctx,s,base.width,base.height);
-  };
+  const redrawAll = useCallback(() => {
+    const canvas = baseRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')!
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    for (const stroke of strokes.current.values()) {
+      drawStroke(ctx, stroke, canvas.width, canvas.height)
+    }
+  }, [drawStroke])
 
   /* ========== 自适应尺寸 ========== */
   useEffect(()=>{
@@ -105,10 +118,12 @@ export function CanvasBoard({
     };
     resize();
     const ro=new ResizeObserver(resize);
-    containerRef.current && ro.observe(containerRef.current);
+    if (containerRef.current) {
+      ro.observe(containerRef.current);
+    }
     window.addEventListener('resize',resize);
     return ()=>{ro.disconnect();window.removeEventListener('resize',resize);};
-  },[]);
+  },[redrawAll]);
 
   /* ---------- 命中测试 (整线擦) ---------- */
   const hitStrokeId = (x:number,y:number,threshold=10)=>{
@@ -222,7 +237,7 @@ export function CanvasBoard({
       draft.removeEventListener('pointermove',move);
       window.removeEventListener('pointerup',finish);
       window.removeEventListener('pointercancel',finish);};
-  },[tool,color,sizePx,lessonId]);
+  },[tool,color,sizePx,lessonId,drawFragErase,drawStroke,redrawAll,sendOp]);
 
   /* ---------- Realtime 回放 ---------- */
   useEffect(()=>{
@@ -248,20 +263,23 @@ export function CanvasBoard({
         })
       .subscribe();
     return ()=>{supabase.removeChannel(ch);};
-  },[lessonId]);
+  },[lessonId,drawFragErase,drawStroke,redrawAll,supabase]);
 
   /* ---------- 清屏 ---------- */
-  const clearBoard=()=>{
-    strokes.current.clear();
-    baseRef.current?.getContext('2d')
-      ?.clearRect(0,0,baseRef.current.width,baseRef.current.height);
-    sendOp({t:'clear'});
-  };
+  const clearBoard = useCallback(() => {
+    strokes.current.clear()
+    const canvas = baseRef.current
+    if (canvas) {
+      const ctx = canvas.getContext('2d')!
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+    sendOp({ t: 'clear' })
+  }, [sendOp])
 
  useEffect(() => {
   registerBoard(lessonId, name, clearBoard);
   return () => unregisterBoard(lessonId);
-  }, [lessonId, name]);
+  }, [lessonId, name,clearBoard,registerBoard,unregisterBoard]);
 
   /* ---------- pointer-events ---------- */
   const canvasPE = tool==='pointer'?'none':'auto';

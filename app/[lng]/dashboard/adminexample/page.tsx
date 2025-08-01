@@ -1,41 +1,42 @@
 'use client'
 
 
-import { admin } from "@/action/auth/admin";
-import { RoleGate } from "@/components/auth/role-gate";
-import { FormSuccess } from "@/components/auth/form-success";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { toast } from "sonner";
+// import { admin } from "@/action/auth/admin";
+// import { RoleGate } from "@/components/auth/role-gate";
+// import { FormSuccess } from "@/components/auth/form-success";
+// import { Button } from "@/components/ui/button";
+// import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+// import { toast } from "sonner";
 
 const AdminPage = () => {
-  const onServerActionClick = () => {
-    admin()
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
+  // const onServerActionClick = () => {
+  //   admin()
+  //     .then((data) => {
+  //       if (data.error) {
+  //         toast.error(data.error);
+  //       }
 
-        if (data.success) {
-          toast.success(data.success);
-        }
-      })
-  }
+  //       if (data.success) {
+  //         toast.success(data.success);
+  //       }
+  //     })
+  // }
   
-  const onApiRouteClick = () => {
-    fetch('/api/test/admin')
-      .then((response) => {
-        if (response.ok) {
-          toast.success("Allowed API Route!");
-        } else {
-          toast.error("Forbidden API Route!");
-        }
-      })
-  }
+  // const onApiRouteClick = () => {
+  //   fetch('/api/test/admin')
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         toast.success("Allowed API Route!");
+  //       } else {
+  //         toast.error("Forbidden API Route!");
+  //       }
+  //     })
+  // }
 
   return (
     <Card className="m-4 p-4 w-auto">
-      <CardHeader>
+      {/* <CardHeader>
         <p className="text-2xl font-semibold text-center">
           🔑 Admin
         </p>
@@ -63,7 +64,7 @@ const AdminPage = () => {
             Click to test
           </Button>
         </div>
-      </CardContent>
+      </CardContent> */}
     </Card>
   );
 };

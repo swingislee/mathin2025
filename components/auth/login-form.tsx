@@ -44,7 +44,8 @@ export const LoginForm = () => {
 		?`${t("OAuthAccountNotLinked")}`
 		:"";
 
-	const [showTwoFactor,setShowTwoFactor] = useState(false);
+	// const [showTwoFactor,setShowTwoFactor] = useState(false);
+	const [showTwoFactor] = useState(false);
 	const [error,setError] = useState<string | undefined>("");
 	const [success,setSuccess] = useState<string | undefined>("");
 	const [isPending, startTransition] = useTransition();
@@ -81,13 +82,16 @@ export const LoginForm = () => {
 						//form.reset();    <== DELETE THIS ROW
 						setError(data.error);
 					}
-					if (data?.success) {
-						form.reset();
-						setSuccess(data.success);
-					}
-					if (data?.twoFactor) {
-						setShowTwoFactor(true);
-					}
+					// if (data?.success) {
+					// 	form.reset();
+					// 	setSuccess(data.success);
+					// }
+
+					//TODO: LOGIN LOGIC
+
+					// if (data?.twoFactor) {
+					// 	setShowTwoFactor(true);
+					// }
 				}
 				)
 	

@@ -4,6 +4,11 @@ import useSWR from 'swr'
 import { useEffect, useMemo, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
+type BroadcastPayload = {
+  student_id: string
+  change: number
+}
+
 type Counts = Record<string, number>
 type StarsRow = { student_id: string; stars: number }
 
@@ -57,7 +62,7 @@ export function useStarsCounts(sessionId: string, opts: Options = {}) {
   }, [supabase, sessionId, mutate])
 
   // 暴露一个发送广播的方法
-  const broadcast = (payload: any) =>
+  const broadcast = (payload: BroadcastPayload) =>
     channelRef.current?.send({ type: 'broadcast', event: 'star_updated', payload })
 
   return {

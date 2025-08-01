@@ -11,7 +11,7 @@ const TestClientPage = () => {
     
       <UserInfo
         label="Client components"
-        user = {user}
+        user = {user ?? undefined}
       />
     </div>
   );
