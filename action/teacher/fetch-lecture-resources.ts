@@ -20,12 +20,12 @@ export type SessionWithResources = Omit<SessionRow, "lectures"> & {
 
 export async function fetchLectureResources(
   sessionId: string
-): Promise<SessionWithResources[]> {
+) {
   // 1. 身份验证 & 创建有权限访问私有 bucket 的客户端
   const supabase = await createClient();
 
   // 2. 拉取基础数据：session → lectures → lecture_resources → resources
-  const { data: sessions, error: sesErr } = await supabase
+  const { data: session, error: sesErr } = await supabase
     .schema("edu_core")
     .from("sessions")
     .select(
@@ -40,63 +40,69 @@ export async function fetchLectureResources(
       )
     `
     )
-    .eq("id", sessionId);
+    .eq("id", sessionId)
+    .single();
 
   if (sesErr) throw sesErr;
-  if (!sessions) return [];
+  if (!session) return ;
 
-  // 3. 为每个资源生成签名 URL 或直接使用 URL
-  return Promise.all(
-    sessions.map(async (s) => {
-      if (!s.lectures) {
-        return { ...s, lectures: null };
+   // 3. If there are no lectures attached, short-circuit
+  if (!session.lectures) {
+    return { ...session, lectures: null };
+  }
+
+    // 4. Enrich each lecture_resource with signedURL or componentURL
+  const enrichedLRs = await Promise.all(
+    session.lectures.lecture_resources.map(async (lr) => {
+      const resource = lr.resources;
+
+      // a) If it's stored in Supabase Storage, generate a signed URL
+      if (resource.storage_path) {
+        const path = resource.storage_path.replace(
+          "2025-lecture-resource/",
+          ""
+        );
+        const { data: urlData, error: urlErr } = await supabase.storage
+          .from("2025-lecture-resource")
+          .createSignedUrl(path, 3600); // valid for 1 hour
+        if (urlErr) console.error("Failed to create signed URL:", urlErr);
+
+        return {
+          ...lr,
+          config: lr.config ?? {},
+          resources: {
+            ...resource,
+            signedURL: urlData?.signedUrl,
+          },
+        };
       }
 
-      // 遍历 lecture_resources，异步处理资源
-      const enrichedLRs = await Promise.all(
-        s.lectures.lecture_resources.map(async (lr) => {
-          const resource = lr.resources;
+      // b) If it's a React component path, just expose the componentURL
+      if (resource.component_path) {
+        return {
+          ...lr,
+          config: lr.config ?? {},
+          resources: {
+            ...resource,
+            componentURL: resource.component_path,
+          },
+        };
+      }
 
-          if (resource.storage_path) {
-            const pathWithoutBucket = resource.storage_path.replace("2025-lecture-resource/", "");
-            const { data: urlData, error: urlErr } = await supabase.storage
-              .from("2025-lecture-resource")  // 你的存储桶名称
-              .createSignedUrl(pathWithoutBucket, 3600); // 1 小时后过期
-
-            if (urlErr) {
-              console.error("签名 URL 生成失败", urlErr);
-            }
-
-            return {
-              ...lr,
-              config: lr.config ?? {},
-              resources: {
-                ...resource,
-                signedURL: urlData?.signedUrl, // 返回签名 URL
-              },
-            };
-          } else if (resource.component_path) {
-            // 对于 React 组件，直接返回 component_path
-            return {
-              ...lr,
-              config: lr.config ?? {},
-              resources: {
-                ...resource,
-                componentURL: resource.component_path, // 直接使用组件 URL
-              },
-            };
-          }
-
-          return lr; // 如果都没有，则不做任何处理
-        })
-      );
-
-      const lec = {
-        ...s.lectures,
-        lecture_resources: enrichedLRs,
-      };
-
-      return { ...s, lectures: lec };
+      // c) Otherwise, leave unchanged
+      return lr;
     })
   );
+
+    // 5. Reassemble and return the enriched session object
+  const lecturesWithUrls = {
+    ...session.lectures,
+    lecture_resources: enrichedLRs,
+  };
+
+  return {
+    ...session,
+    lectures: lecturesWithUrls,
+  };
+
 }

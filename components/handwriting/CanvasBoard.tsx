@@ -33,21 +33,34 @@ export type Tool =
 /* ========== Provider ========== */
 export function CanvasBoard({
   lessonId,
-  name
-}: { lessonId: string; name: string }) {
-
-  /* Supabase (带 RLS) */
-  const supabase = useMemo(
-    () => createClient(),
-    []
+  name,
+  boardType,    // 'main' 或 'side'
+  pageIndex,    // 当 boardType==='main' 时，才有效
+  autoSaveMs = 180000, // 3 分钟
+}: { 
+  lessonId: string;
+  name: string;
+  boardType: 'main' | 'side';
+  pageIndex?: number;
+  autoSaveMs?: number, // 3 分钟
+}) {
+  // 仅用于快照表（board_pages）的索引键：
+  // main => 实际页码；side => -1
+  const pageKey = useMemo(
+    () => (boardType === 'main' ? (pageIndex ?? 0) : -1),
+    [boardType, pageIndex]
   );
+  /* Supabase (带 RLS) */
+  const supabase = useMemo(() => createClient(),[]);
 
-  const { color, sizePx, tool, registerBoard, unregisterBoard  } = useCanvasControl();
+  const { color, sizePx, tool, registerBoard, unregisterBoard, setManualSave, saveAll } = useCanvasControl();
 
   /* ---------- state ---------- */
   const [cursor,  setCursor]  = useState<[number,number]|null>(null); // 光标方块
 
   /* ---------- refs ---------- */
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
   const baseRef  = useRef<HTMLCanvasElement|null>(null);
   const draftRef = useRef<HTMLCanvasElement|null>(null);
   const containerRef = useRef<HTMLDivElement|null>(null);
@@ -55,12 +68,28 @@ export function CanvasBoard({
   const strokeRef = useRef<StrokeNorm|null>(null);
   const strokes   = useRef<Map<string,StrokeNorm>>(new Map());
 
+
+
   /* ---------- helpers ---------- */
-  const sendOp = useCallback((op: WhiteboardOp) => {
-    supabase
-      .channel(`lesson:${lessonId}`)
-      .send({ type: 'broadcast', event: 'OP', payload: op })
-  }, [lessonId,supabase])
+  const sendOp = useCallback(async (op: WhiteboardOp) => {
+    // 1) 持久化
+    await supabase.schema('edu_core')
+      .from('board_ops')
+      .insert({
+        session_id: lessonId,
+        board_type: boardType,
+        page_index: boardType === 'main' ? pageIndex : null,
+        op,
+      });
+
+    // 2) 广播到所有客户端
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'OP',
+      payload: { boardType, pageIndex, op }
+    });
+  }, [lessonId, boardType, pageIndex, supabase]);
+
 
   const drawStroke = useCallback(
     (ctx: CanvasRenderingContext2D, s: StrokeNorm, cw: number, ch: number) => {
@@ -101,6 +130,39 @@ export function CanvasBoard({
       drawStroke(ctx, stroke, canvas.width, canvas.height)
     }
   }, [drawStroke])
+
+  // ---- 快照序列化：把当前内存中的笔迹转为数组存入 JSONB ----
+  const makeSnapshot = useCallback((): StrokeNorm[] => {
+    return Array.from(strokes.current.values());
+  }, []);
+
+  // ---- 应用快照到画布与内存 ----
+  const applySnapshot = useCallback((
+    arr: StrokeNorm[],
+    ctx: CanvasRenderingContext2D
+  ) => {
+    strokes.current.clear();
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    for (const s of arr) {
+      strokes.current.set(s.id, s);
+      drawStroke(ctx, s, ctx.canvas.width, ctx.canvas.height);
+    }
+  }, [drawStroke]);
+
+  // 简化版：只做常规 RPC 保存（由服务器清空该页操作流）
+  const flushSnapshot = useCallback(async () => {
+    const content = makeSnapshot();
+    const payload = {
+      p_session_id: lessonId,
+      p_board_type: boardType,
+      p_page_index: pageKey,
+      p_content: content,
+    };
+    const { error } = await supabase
+      .schema('edu_core')
+      .rpc('save_board_snapshot', payload);
+    if (error) console.error('save_board_snapshot error:', error);
+  }, [lessonId, boardType, pageKey, makeSnapshot, supabase]);
 
   /* ========== 自适应尺寸 ========== */
   useEffect(()=>{
@@ -241,29 +303,49 @@ export function CanvasBoard({
 
   /* ---------- Realtime 回放 ---------- */
   useEffect(()=>{
+    
     const base=baseRef.current; if(!base) return;
     const ctx=base.getContext('2d')!;
-    const ch=supabase.channel(`lesson:${lessonId}`,
-      {config:{broadcast:{self:false}}})
-      .on('broadcast',{event:'OP'},
-        ({payload}:{payload:WhiteboardOp})=>{
-          switch(payload.t){
-            case 'draw':
-              strokes.current.set(payload.stroke.id,payload.stroke);
-              drawStroke(ctx,payload.stroke,base.width,base.height);break;
-            case 'eraseFrag':
-              drawFragErase(ctx,payload.stroke,base.width,base.height);break;
-            case 'eraseLine':
-              strokes.current.delete(payload.id);
-              redrawAll();break;
-            case 'clear':
-              strokes.current.clear();
-              ctx.clearRect(0,0,base.width,base.height);break;
-          }
-        })
+
+    const ch = supabase
+    .channel(`board_ops_${lessonId}`, {config: { broadcast: { self: false } }})
+     .on('broadcast', { event: 'OP' }, ({ payload }) => {
+       const { boardType: bt, pageIndex: pi, op } = payload;
+       if (bt !== boardType) return;
+       if (boardType === 'main' && pi !== pageIndex) return;
+       // 这里用解构出来的 op
+       switch (op.t) {
+         case 'draw':
+           strokes.current.set(op.stroke.id, op.stroke);
+           drawStroke(ctx, op.stroke, base.width, base.height);
+           break;
+         case 'eraseFrag':
+           drawFragErase(ctx, op.stroke, base.width, base.height);
+           break;
+         case 'eraseLine':
+           strokes.current.delete(op.id);
+           redrawAll();
+           break;
+         case 'clear':
+           strokes.current.clear();
+           ctx.clearRect(0, 0, base.width, base.height);
+           break;
+       }
+     })
+    
       .subscribe();
+
+      channelRef.current = ch;
     return ()=>{supabase.removeChannel(ch);};
-  },[lessonId,drawFragErase,drawStroke,redrawAll,supabase]);
+  }, [
+    lessonId,
+    boardType,       // <-- 新增
+    pageIndex,       // <-- 新增
+    drawFragErase,
+    drawStroke,
+    redrawAll,
+    supabase
+  ]);
 
   /* ---------- 清屏 ---------- */
   const clearBoard = useCallback(() => {
@@ -276,16 +358,121 @@ export function CanvasBoard({
     sendOp({ t: 'clear' })
   }, [sendOp])
 
- useEffect(() => {
-  registerBoard(lessonId, name, clearBoard);
-  return () => unregisterBoard(lessonId);
-  }, [lessonId, name,clearBoard,registerBoard,unregisterBoard]);
+  useEffect(() => {
+    const boardId = `${lessonId}-${boardType}`;
+    registerBoard(boardId, name, clearBoard);
+    return () => unregisterBoard(boardId);
+  }, [lessonId,boardType,name,clearBoard,registerBoard,unregisterBoard]);
 
   /* ---------- pointer-events ---------- */
   const canvasPE = tool==='pointer'?'none':'auto';
   const cursorStyle =
     tool.startsWith('eraser') ? 'none' :
     tool==='pointer'          ? 'default' : 'crosshair';
+
+
+  useEffect(() => {
+  // 初次加载：先加载页面快照，再回放操作流（若有）
+
+  let cancelled = false;
+  (async () => {
+    // 1) 清空内存 & 画布
+    strokes.current.clear();
+    const canvas = baseRef.current;
+    if (canvas) canvas.getContext('2d')!.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 2) 先读页面快照（board_pages）
+    const ctx = baseRef.current?.getContext('2d')!;
+    if (!ctx) return;
+    const { data: pageRow, error: pageErr } = await supabase
+      .schema('edu_core')
+      .from('board_pages')
+      .select('content')
+      .eq('session_id', lessonId)
+      .eq('board_type', boardType)
+      .eq('page_index', pageKey)      // 注意：side 使用 -1
+      .maybeSingle();
+    if (!cancelled && !pageErr && pageRow?.content) {
+      applySnapshot(pageRow.content as StrokeNorm[], ctx);
+    }
+
+    // 3) 再回放操作流（board_ops）读取历史：slot = main 时 page_index = 页面；slot = side 时 page_index IS NULL
+    const q = supabase
+      .schema('edu_core')
+      .from('board_ops')
+      .select('op')
+      .eq('session_id', lessonId)
+      .eq('board_type', boardType);
+
+    if (boardType === 'main') {
+      q.eq('page_index', pageIndex ?? 0);
+    } else {
+      q.is('page_index', null);
+    }
+
+
+    const { data, error } = await q
+      .order('created_at', { ascending: true })
+      .returns<{ op: WhiteboardOp }[]>()
+
+    if (error) {
+      console.error('加载板书历史失败', error);
+      return;
+    }
+    if (cancelled || !data) return;
+
+    // 4) 回放增量操作
+    for (const row of data) {
+      const op: WhiteboardOp = row.op;
+      switch (op.t) {
+        case 'draw':
+          strokes.current.set(op.stroke.id, op.stroke);
+          drawStroke(ctx, op.stroke, ctx.canvas.width, ctx.canvas.height);
+          break;
+        case 'eraseFrag':
+          drawFragErase(ctx, op.stroke, ctx.canvas.width, ctx.canvas.height);
+          break;
+        case 'eraseLine':
+          strokes.current.delete(op.id);
+          redrawAll();
+          break;
+        case 'clear':
+          strokes.current.clear();
+          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+          break;
+      }
+    }
+  })();
+
+  return () => { cancelled = true; };
+}, [lessonId, boardType, pageIndex, supabase, drawStroke, drawFragErase, redrawAll]);
+
+ // 在当前页“离开”之前：保存快照并清空该页操作流
+  useEffect(() => {
+    return () => {
+      void (async () => {
+        try {
+          await saveAll();
+        } catch (e) {
+          console.error('saveAll failed:', e);
+        }
+      })();
+    };
+  }, [pageKey, saveAll]);
+
+   // 将手动保存回调注册到全局（组件卸载时清空）
+  useEffect(() => {
+    setManualSave(boardType, () => flushSnapshot());
+    return () => setManualSave(boardType, null);
+  }, [flushSnapshot, setManualSave]);
+
+  // 定时自动保存
+  useEffect(() => {
+    const id = setInterval(() => { void flushSnapshot(); }, autoSaveMs);
+    return () => clearInterval(id);
+  }, [flushSnapshot, autoSaveMs]);
+
+
 
   /* ---------- JSX ---------- */
   return (

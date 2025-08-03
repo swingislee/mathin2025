@@ -22,7 +22,6 @@ type Options = {
 
 export function useStarsCounts(sessionId: string, opts: Options = {}) {
   const {
-    pageIndex = null,
     refreshInterval = 30000,
     dedupingInterval = 800,
     revalidateOnFocus = false,
@@ -30,7 +29,7 @@ export function useStarsCounts(sessionId: string, opts: Options = {}) {
   } = opts
 
   const supabase = useMemo(() => createClient(), [])
-  const key = useMemo(() => ['stars', sessionId, pageIndex] as const, [sessionId, pageIndex])
+  const key = useMemo(() => ['stars', sessionId] as const, [sessionId])
 
   const fetcher = async (): Promise<Counts> => {
     const { data, error } = await supabase
@@ -71,6 +70,6 @@ export function useStarsCounts(sessionId: string, opts: Options = {}) {
     error,
     mutate,
     broadcast,
-    supabase, // 也暴露，减少组件里重复 createClient
+    supabase, // 也暴露，减少组件里重复 createClient    
   }
 }

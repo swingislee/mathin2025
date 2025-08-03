@@ -28,6 +28,10 @@ type CanvasControlState = {
   selectedBoardIds: string[];
   toggleSelectedBoard: (id: string) => void;
   resetSelectedBoards: () => void;
+  manualSavers: Partial<Record<'main' | 'side', () => Promise<void>>>;
+  setManualSave: (kind: 'main' | 'side', fn: null | (() => Promise<void>)) => void;
+  saveBoard: (kind: 'main' | 'side') => Promise<void>;
+  saveAll: () => Promise<void>;
 };
 
 export const useCanvasControl = create<CanvasControlState>((set,get) => ({
@@ -79,5 +83,19 @@ export const useCanvasControl = create<CanvasControlState>((set,get) => ({
   },
   resetSelectedBoards: () => {
     set({ selectedBoardIds: [] });
+  },
+  manualSavers: {},
+   /* 你已有的 actions... */
+  setManualSave: (kind, fn) =>
+    set((s) => ({
+      manualSavers: { ...s.manualSavers, [kind]: fn ?? undefined }
+    })),
+  saveBoard: async (kind) => {
+    const fn = get().manualSavers[kind];
+    if (fn) await fn();
+  },
+  saveAll: async () => {
+    const fns = Object.values(get().manualSavers).filter(Boolean) as Array<() => Promise<void>>;
+    for (const fn of fns) { await fn(); }
   },
 }));

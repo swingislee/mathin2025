@@ -20,7 +20,6 @@ export function StudentRanking({
   pageIndex: number;
 }) {
    const { counts, mutate, broadcast, supabase } = useStarsCounts(sessionId, {
-    pageIndex,
     refreshInterval: 30000,       // 30s 兜底
     revalidateOnFocus: false,     // 课堂场景
     revalidateOnReconnect: true,

@@ -12,13 +12,19 @@ import { ResourcePager } from '../../_components/ResourcePager'
 import { fetchLectureResources, SessionWithResources } from '@/action/teacher/fetch-lecture-resources'
 import { fetchStudents,StudentsRow } from '@/action/teacher/fetch-students'
 import { StudentRanking } from '../../_components/StudentRanking'
+import { usePageController } from '../../_components/usePageController'
 
 
 export default function Page() {
   const { sessionId } = useParams<{ sessionId: string }>()
-  const [sessions, setSessions] = useState<SessionWithResources[]>([])
-  const [selectedIndex, setSelectedIndex] = useState(0)
+
+   //  课件资源 + 学生
+  const [session, setSession] = useState<SessionWithResources>()
   const [students, setStudents] = useState<StudentsRow[]>([])
+
+   //  翻页状态
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const { handlePageChange } = usePageController(sessionId, selectedIndex, setSelectedIndex)
   const { tool } = useCanvasControl()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const boardRef = useRef<HTMLDivElement>(null)
@@ -27,8 +33,8 @@ export default function Page() {
   useEffect(() => {
     fetchLectureResources(sessionId)
       .then(data => {
-        setSessions(data)
-        setSelectedIndex(0)
+        setSession(data)
+        setSelectedIndex(data?.current_page ?? 0);
       })
       .catch(err => console.error('fetchLectureResources error:', err))
 
@@ -41,11 +47,13 @@ export default function Page() {
 
   // Flatten, filter for “main” slot, sort by display_order
   const mainResources = useMemo(() => {
-    return sessions
-      .flatMap(s => s.lectures?.lecture_resources ?? [])
+  // Grab the array (or empty if null/missing)
+    const resources = session?.lectures?.lecture_resources ?? [];
+
+    return resources
       .filter(r => r.slot === 'main' && r.resources.metadata != null)
-      .sort((a, b) => a.display_order - b.display_order)
-  }, [sessions])
+      .sort((a, b) => a.display_order - b.display_order);
+  }, [session])
 
   // Current resource (may be undefined if no resources yet)
   const current = mainResources[selectedIndex]
@@ -102,9 +110,9 @@ export default function Page() {
                 index: i,
                 label: (r.resources.metadata as { title: string }).title,
               }))}
-              onSelect={i => setSelectedIndex(i)}
-              onPrev={() => setSelectedIndex(i => Math.max(i - 1, 0))}
-              onNext={() => setSelectedIndex(i => Math.min(i + 1, mainResources.length - 1))}
+              onSelect={i => handlePageChange(i)}
+              onPrev={() => handlePageChange(Math.max(selectedIndex - 1, 0))}
+              onNext={() => handlePageChange(Math.min(selectedIndex + 1, mainResources.length - 1))}
             />
           </WhiteToolbar>
         </div>
@@ -142,18 +150,21 @@ export default function Page() {
               className="absolute inset-0 z-20"
               style={{ pointerEvents: tool === 'pointer' ? 'none' : 'auto' }}
             >
-              <CanvasBoard lessonId={sessionId} name="主画板" />
+              <CanvasBoard
+                lessonId={sessionId}
+                name="主画板"
+                boardType="main"
+                pageIndex={selectedIndex}
+              />
             </div>
           </div>
 
           <div className="relative flex-1 m-2 overflow-hidden bg-white rounded-2xl shadow-lg">
             <CanvasBoard
-              lessonId={`${sessionId}-side`}
-              name="副画板"            
+              lessonId={sessionId}
+              name="副画板"
+              boardType="side"
             />
-            <div className="absolute w-full mt-2 bottom-0">
-
-            </div> 
           </div>
         </div>
       </main>
@@ -164,7 +175,8 @@ export default function Page() {
           students={students}
           sessionId={sessionId}
           pageIndex={selectedIndex}
-        />   
+        /> 
+
       </div>
     </div>
   )

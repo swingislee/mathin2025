@@ -43,6 +43,98 @@ export type Database = {
           },
         ]
       }
+      board_ops: {
+        Row: {
+          board_type: string
+          created_at: string
+          id: string
+          op: Json
+          page_index: number | null
+          session_id: string
+        }
+        Insert: {
+          board_type: string
+          created_at?: string
+          id?: string
+          op: Json
+          page_index?: number | null
+          session_id: string
+        }
+        Update: {
+          board_type?: string
+          created_at?: string
+          id?: string
+          op?: Json
+          page_index?: number | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_ops_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_pages: {
+        Row: {
+          board_type: string
+          content: Json
+          id: string
+          page_index: number
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          board_type: string
+          content: Json
+          id?: string
+          page_index: number
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          board_type?: string
+          content?: Json
+          id?: string
+          page_index?: number
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_pages_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_snapshots: {
+        Row: {
+          board_type: string
+          page_index: number
+          session_id: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          board_type: string
+          page_index: number
+          session_id: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          board_type?: string
+          page_index?: number
+          session_id?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       class_students: {
         Row: {
           class_id: string
@@ -346,6 +438,7 @@ export type Database = {
           class_id: string
           course_id: string
           created_at: string | null
+          current_page: number
           end_time: string | null
           id: string
           lecture_id: string | null
@@ -359,6 +452,7 @@ export type Database = {
           class_id: string
           course_id: string
           created_at?: string | null
+          current_page?: number
           end_time?: string | null
           id?: string
           lecture_id?: string | null
@@ -372,6 +466,7 @@ export type Database = {
           class_id?: string
           course_id?: string
           created_at?: string | null
+          current_page?: number
           end_time?: string | null
           id?: string
           lecture_id?: string | null
@@ -540,6 +635,15 @@ export type Database = {
         Returns: {
           deleted_id: string
         }[]
+      }
+      save_board_snapshot: {
+        Args: {
+          p_session_id: string
+          p_board_type: string
+          p_page_index: number
+          p_content: Json
+        }
+        Returns: undefined
       }
       stars_by_session: {
         Args: { p_session_id: string; p_page_index?: number }

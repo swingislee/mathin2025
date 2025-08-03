@@ -1,3 +1,5 @@
+"use client"
+
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Slider as ShadcnSlider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -14,6 +16,7 @@ import {
 import { useState, useEffect } from 'react';
 import { HueSlider } from './colorslider';
 import { useCanvasControl, Tool } from './canvasStore';
+import { SaveBoardButton } from './SaveBoardButton';
 
 
 export default function WhiteToolbar({ children }: { children?: React.ReactNode }) {
@@ -157,6 +160,8 @@ export default function WhiteToolbar({ children }: { children?: React.ReactNode 
         </PopoverContent>
       </Popover>
 
+      <SaveBoardButton  />
+
       {/* 清屏按钮（滑动确认） */}
       <Popover>
         <PopoverTrigger asChild>
@@ -185,7 +190,7 @@ export default function WhiteToolbar({ children }: { children?: React.ReactNode 
         </div>
 
         {/* 分隔线 */}
-        <div className="h-px bg-gray-300" />
+        <div className="h-px bg-gray-300" />       
 
         {/* 滑动确认 */}
         <div className="space-y-2">
