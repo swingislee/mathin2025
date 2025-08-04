@@ -8,8 +8,7 @@ type Params = Promise<{ lng: string }>
 export default async function Page(props: {
   params: Params
 }){
-  const params = await props.params
-  const lng = params.lng;
+  const { lng } = await props.params
   const { t } = await Translate(lng)
   
 

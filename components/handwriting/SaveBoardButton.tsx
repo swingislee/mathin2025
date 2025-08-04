@@ -5,7 +5,7 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCanvasControl } from './canvasStore';
+import { useCanvasControl } from './CanvasStore';
 
 type Props = {
   children?: React.ReactNode;                   // 按钮文案

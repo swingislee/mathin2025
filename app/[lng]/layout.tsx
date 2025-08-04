@@ -4,10 +4,10 @@ import { dir } from 'i18next'
 import { languages, fallbackLng } from '@/lib/i18n/settings'
 import { Translate } from '@/lib/i18n'
 import Footer from '@/components/Footer'
-import { ThemeProvider } from "@/components/providers/theme-provider"
+import { ThemeProvider } from "@/components/Providers/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
-type Params = Promise<{ lng: string }>
+type Params = Promise<{ lng: string }>  
 
 export async function generateStaticParams() {
   return languages.map((lng) => ({ lng }))

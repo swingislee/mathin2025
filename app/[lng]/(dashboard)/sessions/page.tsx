@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { DataTable } from "./_components/data-table";
 import { sessionColumns } from "./_components/columns"
 
-import { fetchSessions } from "@/action/teacher/fetch-sessions";
-import type {SessionRecord} from "@/action/teacher/fetch-sessions"
+import { fetchSessions } from "@/actions/teacher/fetch-sessions";
+import type {SessionRecord} from "@/actions/teacher/fetch-sessions"
 
 
 

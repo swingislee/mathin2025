@@ -1,4 +1,4 @@
-import { AvatarButton } from "@/components/auth/avatar-button";
+import { AvatarButton } from "@/components/Auth/avatar-button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar = () => {

@@ -14,8 +14,8 @@ import {
   Trash2
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { HueSlider } from './colorslider';
-import { useCanvasControl, Tool } from './canvasStore';
+import { HueSlider } from './ColorSlider';
+import { useCanvasControl, Tool } from './CanvasStore';
 import { SaveBoardButton } from './SaveBoardButton';
 
 

@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { LoginForm } from "@/components/Auth/login-form";
 import { Suspense } from "react";
 import { BeatLoader } from "react-spinners";
 
@@ -8,7 +8,7 @@ function LoginFormFallback() {
 					<BeatLoader className="h-8 w-8"/>
 			</div>
 	)
-}
+} 
 
 const LoginPage = () => {
   return (

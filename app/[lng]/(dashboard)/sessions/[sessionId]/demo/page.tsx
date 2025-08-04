@@ -4,13 +4,13 @@
 import { useParams } from 'next/navigation'
  import { useEffect, useState, useMemo, useRef, useLayoutEffect } from 'react'
 import Image from 'next/image'
-import WhiteToolbar from '@/components/handwriting/WhiteToolbar'
-import { CanvasBoard } from '@/components/handwriting/CanvasBoard'
-import { useCanvasControl } from '@/components/handwriting/canvasStore'
+import WhiteToolbar from '@/components/HandWriting/WhiteToolbar'
+import { CanvasBoard } from '@/components/HandWriting/CanvasBoard'
+import { useCanvasControl } from '@/components/HandWriting/CanvasStore'
 import { ResourcePager } from '../../_components/ResourcePager'
 
-import { fetchLectureResources, SessionWithResources } from '@/action/teacher/fetch-lecture-resources'
-import { fetchStudents,StudentsRow } from '@/action/teacher/fetch-students'
+import { fetchLectureResources, SessionWithResources } from '@/actions/teacher/fetch-lecture-resources'
+import { fetchStudents,StudentsRow } from '@/actions/teacher/fetch-students'
 import { StudentRanking } from '../../_components/StudentRanking'
 import { usePageController } from '../../_components/usePageController'
 

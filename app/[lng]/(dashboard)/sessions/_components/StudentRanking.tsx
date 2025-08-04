@@ -2,7 +2,7 @@
 
 import { useState, useRef, useLayoutEffect, useMemo } from 'react'
 import { StarIcon, EllipsisVertical } from 'lucide-react'
-import { StudentsRow } from '@/action/teacher/fetch-students'
+import { StudentsRow } from '@/actions/teacher/fetch-students'
 import { Database } from '@/utils/types/supabase'
 import { useStarsCounts } from './useStarsCounts'
 

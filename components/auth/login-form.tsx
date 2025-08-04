@@ -29,7 +29,7 @@ import Link from "next/link"
 import { CardWrapper } from "./card-wrapper"
 import { FormError } from "./form-error"
 import { FormSuccess } from "./form-success"
-import { login } from "@/action/auth/login"
+import { login } from "@/actions/auth/login"
 
 export const LoginForm = () => {
 	const params = useParams<{ lng: string; }>()

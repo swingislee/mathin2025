@@ -8,7 +8,7 @@ import {
 import { createClient } from '@/utils/supabase/client';
 import { getStroke } from 'perfect-freehand';
 import { v4 as uuid } from 'uuid';
-import { useCanvasControl } from './canvasStore';
+import { useCanvasControl } from './CanvasStore';
 
 /* ---------- 数据类型 ---------- */
 type StrokeNorm = {

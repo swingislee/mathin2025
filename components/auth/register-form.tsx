@@ -20,7 +20,7 @@ import { Button } from "../ui/button"
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error"
 import { FormSuccess } from "./form-success"
-import { register } from "@/action/auth/register"
+import { register } from "@/actions/auth/register"
 import { BeatLoader } from "react-spinners"
 
 function RegisterFormFallback() {
