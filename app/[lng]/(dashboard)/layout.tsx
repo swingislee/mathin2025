@@ -33,16 +33,22 @@ export default async function RootLayout(
 
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-        <div className="flex flex-col w-full h-screen">
-        {/* Navbar */}
-        <Navbar />
+    <SidebarProvider defaultOpen={defaultOpen}   
+      style={{
+        ["--sidebar-width" as string]: "14rem",
+        ["--sidebar-width-mobile" as string]: "14rem",
+    }}>
+      <div className="flex bg-red-300">
+        <AppSidebar  />
+        <div className="bg-green-100">
+          {/* Navbar */}
+          <Navbar />
 
-        {/* Main content */}
-        <main className="min-h-0 min-w-0 grow w-full">
+          {/* Main content */}
+          <main className="bg-yellow-200">
             {children}
           </main>
+        </div>
       </div>
     </SidebarProvider>
   )

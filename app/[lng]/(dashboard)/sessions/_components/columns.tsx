@@ -34,8 +34,8 @@ export const sessionColumns: ColumnDef<SessionRecord>[] = [
     header: '教师',
   },
   {
-    accessorFn: row => row.rooms?.room_number ?? '—',
-    id: 'room_number',
+    accessorFn: row => row.rooms?.name ?? '—',
+    id: 'room_name',
     header: '教室',
   },
   {

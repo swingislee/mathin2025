@@ -15,23 +15,23 @@ const config = {
   		padding: '2rem'
   	},
   	extend: {
-			screens: {
-				sl: {
-					raw: '(orientation: landscape)'
-				},
-				tp: {
-					raw: '(min-width: 480px) and (orientation: portrait)'
-				},
-				tl: {
-					raw: '(min-width: 768px) and (orientation: landscape)'
-				},
-				dl: {
-					raw: '(min-width: 1100px) and (orientation: landscape)'
-				},
-				dp: {
-					raw: '(min-width: 900px) and (orientation: portrait)'
-				}
-			},
+  		screens: {
+  			sl: {
+  				raw: '(orientation: landscape)'
+  			},
+  			tp: {
+  				raw: '(min-width: 480px) and (orientation: portrait)'
+  			},
+  			tl: {
+  				raw: '(min-width: 768px) and (orientation: landscape)'
+  			},
+  			dl: {
+  				raw: '(min-width: 1100px) and (orientation: landscape)'
+  			},
+  			dp: {
+  				raw: '(min-width: 900px) and (orientation: portrait)'
+  			}
+  		},
   		colors: {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',

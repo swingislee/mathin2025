@@ -111,30 +111,6 @@ export type Database = {
           },
         ]
       }
-      board_snapshots: {
-        Row: {
-          board_type: string
-          page_index: number
-          session_id: string
-          updated_at: string
-          url: string
-        }
-        Insert: {
-          board_type: string
-          page_index: number
-          session_id: string
-          updated_at?: string
-          url: string
-        }
-        Update: {
-          board_type?: string
-          page_index?: number
-          session_id?: string
-          updated_at?: string
-          url?: string
-        }
-        Relationships: []
-      }
       class_students: {
         Row: {
           class_id: string
@@ -172,7 +148,6 @@ export type Database = {
           campus: string | null
           class_name: string
           class_status: string | null
-          classrooms: string | null
           course_fee: number | null
           course_id: string | null
           created_at: string | null
@@ -184,6 +159,7 @@ export type Database = {
           is_published: boolean | null
           max_students: number | null
           planned_capacity: number | null
+          room_id: string | null
           season: string | null
           start_time: string | null
           subject: string | null
@@ -196,7 +172,6 @@ export type Database = {
           campus?: string | null
           class_name: string
           class_status?: string | null
-          classrooms?: string | null
           course_fee?: number | null
           course_id?: string | null
           created_at?: string | null
@@ -208,6 +183,7 @@ export type Database = {
           is_published?: boolean | null
           max_students?: number | null
           planned_capacity?: number | null
+          room_id?: string | null
           season?: string | null
           start_time?: string | null
           subject?: string | null
@@ -220,7 +196,6 @@ export type Database = {
           campus?: string | null
           class_name?: string
           class_status?: string | null
-          classrooms?: string | null
           course_fee?: number | null
           course_id?: string | null
           created_at?: string | null
@@ -232,6 +207,7 @@ export type Database = {
           is_published?: boolean | null
           max_students?: number | null
           planned_capacity?: number | null
+          room_id?: string | null
           season?: string | null
           start_time?: string | null
           subject?: string | null
@@ -244,6 +220,12 @@ export type Database = {
             foreignKeyName: "classes_course_id_fkey"
             columns: ["course_id"]
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_room_id_fkey"
+            columns: ["room_id"]
+            referencedRelation: "rooms"
             referencedColumns: ["id"]
           },
           {
@@ -415,21 +397,21 @@ export type Database = {
           capacity: number
           floor: number
           id: string
-          room_number: string | null
+          name: string | null
         }
         Insert: {
           building?: string | null
           capacity: number
           floor: number
           id?: string
-          room_number?: string | null
+          name?: string | null
         }
         Update: {
           building?: string | null
           capacity?: number
           floor?: number
           id?: string
-          room_number?: string | null
+          name?: string | null
         }
         Relationships: []
       }

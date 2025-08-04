@@ -15,7 +15,7 @@ export type SessionRecord = SessionRow & {
   courses:  Pick<CourseRow,  'name'>        | null
   lectures: Pick<LectureRow, 'title'>       | null
   teachers: Pick<TeacherRow, 'name'>        | null
-  rooms:    Pick<RoomRow,    'room_number'> | null
+  rooms:    Pick<RoomRow,    'name'> | null
 }
 
 export const fetchSessions = async () => {
@@ -30,7 +30,7 @@ export const fetchSessions = async () => {
       courses (name),
       lectures(title),
       teachers(name),
-      rooms   (room_number)
+      rooms   (name)
     `)
     .order('start_time', { ascending: true })
 

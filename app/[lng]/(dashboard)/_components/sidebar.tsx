@@ -11,12 +11,12 @@ export const AppSidebar =() => {
 
 
   return(
-    <Sidebar>
+    <Sidebar className="bg-transparent">
       <SidebarHeader>
         <Link href="/">
-          <div className="flex items-center justify-center">
-            <Image src='/assets/tohome.png' alt="to home" width={30} height={30} /> 
-            <h1 className="text-4xl whitespace-nowrap">Math Note</h1>
+          <div className="flex items-start">
+            <Image src='/assets/tohome.png' alt="to home" width={32} height={32} /> 
+            <div className="text-3xl whitespace-nowrap">Math Note</div>
           </div>
         </Link>
       </SidebarHeader>
